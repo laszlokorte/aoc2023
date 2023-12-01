@@ -1,52 +1,56 @@
 defmodule Day1 do
   use AOC, day: 1
 
-  def first_and_last(line, pattern) do
-    {
-      pattern |> Regex.run(line, capture: :all_but_first) |> List.first(), 
-      0..String.length(line) |> Enum.reduce("0", fn x, acc -> 
-        case pattern |> Regex.run(line, offset: x, capture: :all_but_first) do
-          [a] -> a
-          nil -> acc
-        end
-      end)
-    }
+  @part1pattern ~r/(\d)/
+  @part2words ["one","two","three","four","five","six","seven","eight","nine"]
+  @part2pattern ~r/(\d|#{@part2words |> Enum.join("|")})/
+
+  def first_and_last(a) do
+    [Enum.at(a, 0), Enum.at(a, -1)]
   end
 
-  def pair_to_number({a,b}, converter) do
-    10 * converter.(a) + converter.(b)
+  def find_matches(line, pattern) do
+    0..String.length(line) 
+    |> Enum.map(&Regex.run(pattern, line, offset: &1, capture: :first)) 
+    |> Enum.reject(&is_nil/1) 
+    |> List.flatten()
   end
 
-  def digit_to_int(d) do
+  def places_to_number(places) do
+    places 
+    |> Enum.reverse() 
+    |> Enum.with_index() 
+    |> Enum.reduce(0, fn {d,i},acc -> acc + 10**i * d end)
+  end
+
+  def single_digit_to_int(d, fallback_words \\ []) do
     case Integer.parse(d) do
       {i, _} -> i
+      _ -> Enum.find_index(fallback_words, & &1 == d) + 1
     end
   end
 
-  def digit_to_int(d, words) do
-    case Integer.parse(d) do
-      {i, _} -> i
-      _ -> Enum.find_index(words, & &1 == d) + 1
-    end
+  def all_digits_to_int(digits, fallback_words \\ []) do
+    Enum.map(digits, &single_digit_to_int(&1, fallback_words))
   end
   
-  @part1pattern ~r/(\d)/
   def part1(input) do
     input 
     |> String.split("\n")
-    |> Enum.map(&Day1.first_and_last(&1, @part1pattern))
-    |> Enum.map(fn p -> Day1.pair_to_number(p, &Day1.digit_to_int(&1)) end)
+    |> Enum.map(&Day1.find_matches(&1, @part1pattern))
+    |> Enum.map(&Day1.first_and_last/1)
+    |> Enum.map(&Day1.all_digits_to_int(&1))
+    |> Enum.map(&Day1.places_to_number/1)
     |> Enum.sum
   end
-
-  @part2words ["one","two","three","four","five","six","seven","eight","nine"]
-  @part2pattern ~r/(\d|#{@part2words |> Enum.join("|")})/
 
   def part2(input) do
     input 
     |> String.split("\n")
-    |> Enum.map(&Day1.first_and_last(&1, @part2pattern))
-    |> Enum.map(fn p -> Day1.pair_to_number(p, &Day1.digit_to_int(&1, @part2words)) end)
+    |> Enum.map(&Day1.find_matches(&1, @part2pattern))
+    |> Enum.map(&Day1.first_and_last/1)
+    |> Enum.map(&Day1.all_digits_to_int(&1, @part2words))
+    |> Enum.map(&Day1.places_to_number/1)
     |> Enum.sum
   end
 end
