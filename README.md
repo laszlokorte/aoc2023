@@ -1,21 +1,17 @@
-# Aoc23
+# My attempt at Advent of Code 2023 in 
 
-**TODO: Add description**
+## Run a single day
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `aoc23` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:aoc23, "~> 0.1.0"}
-  ]
-end
+```sh
+$ mix run -e 'Day1.all'
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/aoc23>.
 
+## Run a single challange
+
+```sh
+$ mix run -e 'Day1.part1_test'
+$ mix run -e 'Day1.part1_prod'
+$ mix run -e 'Day1.part2_test'
+$ mix run -e 'Day1.part2_prod'
+```
