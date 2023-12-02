@@ -6,20 +6,23 @@ defmodule Day2 do
   @setup_part1 %{
     "red" => 12,
     "green" => 13,
-    "blue" => 14,
+    "blue" => 14
   }
 
   def parse_rounds(all_rounds) do
     all_rounds
-      |> String.split(";")
-      |> Enum.map(&Regex.scan(@round_pattern, &1, capture: :all_but_first))
-      |> Enum.map(&Enum.into(&1, %{}, fn [a, b] -> {b, a |> String.to_integer()} end))
+    |> String.split(";", trim: true)
+    |> Enum.map(&Regex.scan(@round_pattern, &1, capture: :all_but_first))
+    |> Enum.map(&Enum.into(&1, %{}, fn [a, b] -> {b, a |> String.to_integer()} end))
   end
 
   def parse_game(line) do
     [number, all_rounds] = Regex.run(@line_pattern, line, capture: [:number, :rounds])
 
-    {number |> String.to_integer(), all_rounds |> Day2.parse_rounds()}
+    {
+      number |> String.to_integer(),
+      all_rounds |> Day2.parse_rounds()
+    }
   end
 
   def round_is_possible(one_round, max_cubes) do
@@ -31,9 +34,13 @@ defmodule Day2 do
   end
 
   def required_cube_count({_, rounds}) do
-    Enum.reduce(rounds, %{}, &Map.merge(&1, &2, fn _k, x, y ->
-      max(x,y)
-    end))
+    Enum.reduce(
+      rounds,
+      %{},
+      &Map.merge(&1, &2, fn _k, x, y ->
+        max(x, y)
+      end)
+    )
   end
 
   def cubes_power(cubes) do
