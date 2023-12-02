@@ -1,0 +1,19 @@
+Day1
+Part 1 Test:
+142
+Part 1 Prod:
+55834
+Part 2 Test:
+281
+Part 2 Prod:
+53221
+
+Day 2
+Part 1 Test:
+8
+Part 1 Prod:
+2265
+Part 2 Test:
+2286
+Part 2 Prod:
+64097

@@ -1,23 +1,29 @@
 defmodule AOC do
-  
+
+  def all do
+    IO.puts("\nDay1")
+    Day1.all
+    IO.puts("\nDay 2")
+    Day2.all
+  end
+
   defmacro __using__(opts) do
     quote do
-      @externalResource unquote('inputs/test-#{Keyword.get(opts, :day)}-1.txt')
-      @externalResource unquote('inputs/prod-#{Keyword.get(opts, :day)}-1.txt')
-      @externalResource unquote('inputs/test-#{Keyword.get(opts, :day)}-2.txt')
-      @externalResource unquote('inputs/prod-#{Keyword.get(opts, :day)}-2.txt')
 
-      @test1data File.read(unquote('inputs/test-#{Keyword.get(opts, :day)}-1.txt')) |> elem(1)
-      @prod1data File.read(unquote('inputs/prod-#{Keyword.get(opts, :day)}-1.txt')) |> elem(1)
-      @test2data File.read(unquote('inputs/test-#{Keyword.get(opts, :day)}-2.txt')) |> elem(1)
-      @prod2data File.read(unquote('inputs/prod-#{Keyword.get(opts, :day)}-2.txt')) |> elem(1)
+      @externalResource unquote('inputs/day-#{Keyword.get(opts, :day)}-test-1.txt')
+      @externalResource unquote('inputs/day-#{Keyword.get(opts, :day)}-test-2.txt')
+      @externalResource unquote('inputs/day-#{Keyword.get(opts, :day)}-prod.txt')
+
+      @test1data File.read(unquote('inputs/day-#{Keyword.get(opts, :day)}-test-1.txt')) |> elem(1)
+      @test2data File.read(unquote('inputs/day-#{Keyword.get(opts, :day)}-test-2.txt')) |> elem(1)
+      @proddata File.read(unquote('inputs/day-#{Keyword.get(opts, :day)}-prod.txt')) |> elem(1)
 
       def part1_test do
         IO.puts(part1(@test1data))
       end
 
       def part1_prod do
-        IO.puts(part1(@prod1data))
+        IO.puts(part1(@proddata))
       end
       
       def part2_test do
@@ -25,7 +31,7 @@ defmodule AOC do
       end
 
       def part2_prod do
-        IO.puts(part2(@prod2data))
+        IO.puts(part2(@proddata))
       end
 
       def all do
