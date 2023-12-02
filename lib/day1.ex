@@ -1,18 +1,17 @@
 defmodule Day1 do
   use AOC, day: 1
 
-  @part1pattern ~r/(\d)/
+  @part1pattern ~r/(?=(\d))/
   @part2words ["one","two","three","four","five","six","seven","eight","nine"]
-  @part2pattern ~r/(\d|#{@part2words |> Enum.join("|")})/
+  @part2pattern ~r/(?=(\d|#{@part2words |> Enum.join("|")}))/
 
   def first_and_last(a) do
     [Enum.at(a, 0), Enum.at(a, -1)]
   end
 
   def find_matches(line, pattern) do
-    0..String.length(line) 
-    |> Enum.map(&Regex.run(pattern, line, offset: &1, capture: :first)) 
-    |> Enum.reject(&is_nil/1) 
+    pattern
+    |>Regex.scan(line, capture: :all_but_first)
     |> List.flatten()
   end
 
@@ -23,7 +22,7 @@ defmodule Day1 do
     |> Enum.reduce(0, fn {d,i},acc -> acc + 10**i * d end)
   end
 
-  def single_digit_to_int(d, fallback_words \\ []) do
+  def single_digit_to_int(d, fallback_words) do
     case Integer.parse(d) do
       {i, _} -> i
       _ -> Enum.find_index(fallback_words, & &1 == d) + 1
