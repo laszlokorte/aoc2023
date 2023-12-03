@@ -4,6 +4,7 @@ defmodule Day3 do
   @symbols ~r{[^\d\.]}
   @digits ~r{\d+}
   @gears ~r{\*}
+  @spacer "."
 
   def is_symbol(s) do
     s |> String.match?(@symbols)
@@ -12,10 +13,13 @@ defmodule Day3 do
   def has_neighbour_symbol(start..e, prev, current, next) do
     len = e - start + 1
 
-    prev |> String.slice(start - 1, len + 2) |> Day3.is_symbol() ||
-      next |> String.slice(start - 1, len + 2) |> Day3.is_symbol() ||
-      current |> String.slice(start - 1, 1) |> Day3.is_symbol() ||
-      current |> String.slice(start + len, 1) |> Day3.is_symbol()
+    [
+      prev |> String.slice(start - 1, len + 2),
+      next |> String.slice(start - 1, len + 2),
+      current |> String.slice(start - 1, 1),
+      current |> String.slice(start + len, 1)
+    ]
+    |> Enum.any?(&Day3.is_symbol/1)
   end
 
   def find_ranges(str, pattern) do
@@ -35,33 +39,40 @@ defmodule Day3 do
     end)
   end
 
-  def find_gears([front, prev, current, next, tail]) do
-    surrounding_nums =
-      Enum.concat([
-        find_numbers([front, prev, current]),
-        find_numbers([prev, current, next]),
-        find_numbers([current, next, tail])
-      ])
-      |> Enum.map(fn {s..e, num} -> {Range.new(s - 1, e + 1), num} end)
+  def ranges_touching?(range_one, two_start..two_end) do
+    !Range.disjoint?(range_one, Range.new(two_start - 1, two_end + 1))
+  end
 
-    gears =
-      current
-      |> Day3.find_ranges(@gears)
-      |> Enum.map(fn g ->
-        Enum.filter(surrounding_nums, fn {r, num} -> !Range.disjoint?(g, r) end)
+  def find_gears(line_chunk) do
+    [_, _, current, _, _] = line_chunk
+
+    surrounding_numbers =
+      line_chunk
+      |> Enum.chunk_every(3, 1, :discard)
+      |> Enum.flat_map(&find_numbers/1)
+
+    current
+    |> Day3.find_ranges(@gears)
+    |> Enum.map(fn g ->
+      Enum.filter(surrounding_numbers, fn
+        {r, _} -> ranges_touching?(g, r)
+        _ -> false
       end)
-      |> Enum.filter(fn l -> length(l) == 2 end)
-      |> Enum.map(fn [{_, a}, {_, b}] -> {a, b} end)
+    end)
+    |> Enum.map(fn
+      [{_, a}, {_, b}] -> a * b
+      _ -> 0
+    end)
   end
 
   def split_pad(str, padding \\ 1) do
     str
     |> String.split("\n", trim: true)
-    |> Enum.concat(List.duplicate("...", padding))
+    |> Enum.concat(List.duplicate(@spacer, padding))
     |> Enum.reverse()
-    |> Enum.concat(List.duplicate("...", padding))
+    |> Enum.concat(List.duplicate(@spacer, padding))
     |> Enum.reverse()
-    |> Enum.map(fn l -> "." <> l <> "." end)
+    |> Enum.map(fn l -> @spacer <> l <> @spacer end)
   end
 
   def part1(input) do
@@ -78,7 +89,6 @@ defmodule Day3 do
     |> Day3.split_pad(2)
     |> Enum.chunk_every(5, 1, :discard)
     |> Enum.flat_map(&Day3.find_gears/1)
-    |> Enum.map(fn {a, b} -> a * b end)
     |> Enum.sum()
   end
 end
