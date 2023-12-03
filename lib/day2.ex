@@ -1,8 +1,8 @@
 defmodule Day2 do
   use AOC, day: 2
+
   @line_pattern ~r/Game (?<number>\d+): (?<rounds>.*)/
   @round_pattern ~r/(?<count>\d+) (?<color>\w+)/
-
   @setup_part1 %{
     "red" => 12,
     "green" => 13,
@@ -64,4 +64,5 @@ defmodule Day2 do
     |> Enum.map(&Day2.cubes_power/1)
     |> Enum.sum()
   end
+
 end
