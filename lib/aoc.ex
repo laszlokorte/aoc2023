@@ -7,7 +7,8 @@ defmodule AOC do
   def all do
     {:consolidated, days} = Day.__protocol__(:impls)
 
-    days |> Enum.each(fn d ->
+    days
+    |> Enum.each(fn d ->
       IO.puts("## Day #{Day.number(struct(d, []))} ##")
       IO.puts("Part 1 Test:")
       apply(d, :part1_test, [])

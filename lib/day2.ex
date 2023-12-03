@@ -64,5 +64,4 @@ defmodule Day2 do
     |> Enum.map(&Day2.cubes_power/1)
     |> Enum.sum()
   end
-
 end
