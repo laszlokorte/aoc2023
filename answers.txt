@@ -1,4 +1,4 @@
-Day1
+## Day 1 ##
 Part 1 Test:
 142
 Part 1 Prod:
@@ -8,7 +8,7 @@ Part 2 Test:
 Part 2 Prod:
 53221
 
-Day 2
+## Day 2 ##
 Part 1 Test:
 8
 Part 1 Prod:
@@ -17,3 +17,13 @@ Part 2 Test:
 2286
 Part 2 Prod:
 64097
+
+## Day 3 ##
+Part 1 Test:
+4361
+Part 1 Prod:
+498559
+Part 2 Test:
+467835
+Part 2 Prod:
+72246648
