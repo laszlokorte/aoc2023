@@ -22,8 +22,18 @@ Part 2 Prod:
 Part 1 Test:
 4361
 Part 1 Prod:
-498559
+501600
 Part 2 Test:
 467835
 Part 2 Prod:
 72246648
+
+## Day 4 ##
+Part 1 Test:
+13
+Part 1 Prod:
+25004
+Part 2 Test:
+30
+Part 2 Prod:
+14427616
