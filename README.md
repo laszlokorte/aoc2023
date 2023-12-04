@@ -23,6 +23,8 @@ mix run -e 'Day1.part2_prod'
 mix run -e 'AOC.all'
 ```
 
-## Todo
+## Generate Template for a new Day
 
-Figure out iterate over all `Day*` modules instead of hardcoding them in `AOC.all`
+```sh
+mix run -e 'AOC.setup_day(25)' # for day 25
+```
