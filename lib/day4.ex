@@ -18,6 +18,25 @@ defmodule Day4 do
     |> MapSet.size()
   end
 
+  def sum_lists([], []), do: []
+  def sum_lists([h | tail], []), do: [h | tail]
+  def sum_lists([], [h | tail]), do: [h | tail]
+  def sum_lists([x | xt], [y | yt]), do: [x + y | sum_lists(xt, yt)]
+
+  def count_total_cards(hits_per_card) do
+    Enum.reduce(hits_per_card, {0, []}, fn
+      this_card_matches, {sum_of_cards, []} ->
+        {sum_of_cards + 1, List.duplicate(1, this_card_matches)}
+
+      this_card_matches, {sum_of_cards, [copies | tail]} ->
+        {
+          sum_of_cards + copies + 1,
+          sum_lists(tail, List.duplicate(copies + 1, this_card_matches))
+        }
+    end)
+    |> elem(0)
+  end
+
   def part1(input) do
     input
     |> String.split("\n", trim: true)
@@ -30,21 +49,6 @@ defmodule Day4 do
     input
     |> String.split("\n", trim: true)
     |> Enum.map(&Day4.count_matches/1)
-    |> Enum.reduce({0, []}, fn
-      hits, {sum, []} ->
-        {sum + 1, List.duplicate(1, hits)}
-
-      hits, {sum, [copies | tail]} ->
-        {
-          sum + copies + 1,
-          sum_list(tail, List.duplicate(copies + 1, hits))
-        }
-    end)
-    |> elem(0)
+    |> Day4.count_total_cards()
   end
-
-  def sum_lists([], []), do: []
-  def sum_lists([h | tail], []), do: [h | tail]
-  def sum_lists([], [h | tail]), do: [h | tail]
-  def sum_lists([x | xt], [y | yt]), do: [x + y | sum_lists(xt, yt)]
 end
