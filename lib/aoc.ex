@@ -22,6 +22,36 @@ defmodule AOC do
     end)
   end
 
+  def setup_day(day) do
+    for f <- [
+          "inputs/day-#{day}-test-1.txt",
+          "inputs/day-#{day}-test-1.txt",
+          "inputs/day-#{day}-prod.txt"
+        ] do
+      unless File.exists?(f), do: File.write(f, "", [:write, :append, :utf8])
+    end
+
+    unless File.exists?("lib/day#{day}.ex"),
+      do:
+        File.write(
+          "lib/day#{day}.ex",
+          """
+          defmodule Day#{day} do
+            use AOC, day: #{day}
+          
+            def part1(input) do
+              input
+            end
+          
+            def part2(input) do
+              input
+            end
+          end
+          """,
+          [:write, :append, :utf8]
+        )
+  end
+
   defmacro __using__(opts) do
     quote do
       defstruct []
