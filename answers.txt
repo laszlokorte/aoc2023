@@ -37,3 +37,13 @@ Part 2 Test:
 30
 Part 2 Prod:
 14427616
+
+## Day 5 ##
+Part 1 Test:
+35
+Part 1 Prod:
+457535844
+Part 2 Test:
+46
+Part 2 Prod:
+41222968
