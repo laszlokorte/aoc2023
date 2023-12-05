@@ -11,8 +11,8 @@ defmodule Day5 do
   def pack_dense_ranges(ranges) do
     ranges
     |> Enum.sort_by(fn {_, dst_start.._} -> dst_start end)
-    |> (&Enum.concat([{@min_range..@min_range, @min_range..@min_range}], &1)).()
-    |> (&Enum.concat([&1, [{@max_range..@max_range, @max_range..@max_range}]])).()
+    |> (&Enum.concat([{@min_range, @min_range..@min_range}], &1)).()
+    |> (&Enum.concat([&1, [{@max_range, @max_range..@max_range}]])).()
     |> Enum.chunk_every(2, 1)
     |> Enum.flat_map(fn
       [{src, as..ae}, {_, bs.._}] ->
@@ -69,19 +69,24 @@ defmodule Day5 do
     max(a, min)..min(b, max)
   end
 
+  def map_input_to_output(input, {src_start, dst_start..dst_end}) do
+    start..nd = clamp_range(input, dst_start..dst_end)
+    
+    (start - dst_start + src_start)..(nd - dst_start + src_start)
+  end
+
+  def apply_mappings_to_one_input(mappings, input) do
+    mappings
+      |> Enum.filter(fn {_, dst} -> not Range.disjoint?(input, dst) end)
+      |> Enum.map(&map_input_to_output(input, &1))
+  end
+
+  def apply_mappings(mappings, inputs) do
+    inputs |> Enum.flat_map(&apply_mappings_to_one_input(mappings, &1))
+  end
+
   def find_dependencies(seeds, maps) do
-    Enum.reduce(maps, seeds, fn
-      mapping, inputs ->
-        Enum.flat_map(inputs, fn
-          i ->
-            Enum.filter(mapping, fn {_, dst} -> not Range.disjoint?(i, dst) end)
-            |> Enum.map(fn {src_start, dst_start..dst_end} ->
-              case clamp_range(i, dst_start..dst_end) do
-                start..nd -> (start - dst_start + src_start)..(nd - dst_start + src_start)
-              end
-            end)
-        end)
-    end)
+    maps |> Enum.reduce(seeds, &apply_mappings/2)
   end
 
   def part1(input) do
