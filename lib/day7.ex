@@ -3,7 +3,8 @@ defmodule Day7 do
 
   @cards_part1 ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
   @cards_part2 ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
-  @joker "J"
+  @jokers_part1 MapSet.new()
+  @jokers_part2 MapSet.new(["J"])
 
   def card_rank(card, card_order) do
     Enum.find_index(card_order, &(&1 == card))
@@ -17,25 +18,18 @@ defmodule Day7 do
   def hand_rank_sorted([c, c, _, _, _]), do: 5
   def hand_rank_sorted([_, _, _, _, _]), do: 6
 
-  def apply_joker(original, true) do
-    without_jokers = original |> Enum.filter(&(&1 != @joker))
+  def apply_joker(original, joker) do
+    without_jokers = original |> Enum.filter(&(&1 not in joker))
     missing = Enum.count(original) - Enum.count(without_jokers)
 
-    improved =
-      without_jokers
-      |> List.first(@joker)
-      |> List.duplicate(missing)
-      |> Enum.concat(without_jokers)
-
-    improved
+    without_jokers
+    |> List.first(List.first(original))
+    |> List.duplicate(missing)
+    |> Enum.concat(without_jokers)
   end
 
-  def apply_joker(sorted_hand, false), do: sorted_hand
-
-  def hand_with_rank({bid, hand}, card_order, joker) do
-    rank = hand |> String.codepoints() |> hand_rank(card_order, joker)
-
-    {rank, bid, hand}
+  def hand_bid_rank({_bid, hand}, card_order, joker) do
+    hand |> String.codepoints() |> hand_rank(card_order, joker)
   end
 
   def hand_rank(hand, card_order, joker) do
@@ -60,23 +54,23 @@ defmodule Day7 do
     {String.to_integer(bid), hand}
   end
 
-  def calculate_hands(input, card_order, use_joker) do
+  def calculate_hands(input, card_order, joker) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&parse_hand(&1))
-    |> Enum.map(&hand_with_rank(&1, card_order, use_joker))
-    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.sort_by(&hand_bid_rank(&1, card_order, joker))
+    |> Enum.map(&elem(&1, 0))
     |> Enum.reverse()
-    |> Enum.with_index()
-    |> Enum.map(fn {{_rank, bid, _hand}, index} -> bid * (index + 1) end)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {bid, index} -> bid * index end)
     |> Enum.sum()
   end
 
   def part1(input) do
-    calculate_hands(input, @cards_part1, false)
+    calculate_hands(input, @cards_part1, @jokers_part1)
   end
 
   def part2(input) do
-    calculate_hands(input, @cards_part2, true)
+    calculate_hands(input, @cards_part2, @jokers_part2)
   end
 end
