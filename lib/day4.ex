@@ -39,7 +39,7 @@ defmodule Day4 do
 
   def part1(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day4.count_matches/1)
     |> Enum.map(&Day4.score_points/1)
     |> Enum.sum()
@@ -47,7 +47,7 @@ defmodule Day4 do
 
   def part2(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day4.count_matches/1)
     |> Day4.count_total_cards()
   end

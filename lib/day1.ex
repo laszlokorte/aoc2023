@@ -35,7 +35,7 @@ defmodule Day1 do
 
   def part1(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part1pattern))
     |> Enum.map(&Day1.first_and_last/1)
     |> Enum.map(&Day1.all_digits_to_int(&1))
@@ -45,7 +45,7 @@ defmodule Day1 do
 
   def part2(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part2pattern))
     |> Enum.map(&Day1.first_and_last/1)
     |> Enum.map(&Day1.all_digits_to_int(&1, @part2words))

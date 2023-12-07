@@ -67,7 +67,7 @@ defmodule Day3 do
 
   def split_pad(str, padding \\ 1) do
     str
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.concat(List.duplicate(@spacer, padding))
     |> Enum.reverse()
     |> Enum.concat(List.duplicate(@spacer, padding))

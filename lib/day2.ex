@@ -49,7 +49,7 @@ defmodule Day2 do
 
   def part1(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day2.parse_game/1)
     |> Enum.filter(&Day2.game_is_possible/1)
     |> Enum.map(&elem(&1, 0))
@@ -58,7 +58,7 @@ defmodule Day2 do
 
   def part2(input) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day2.parse_game/1)
     |> Enum.map(&Day2.required_cube_count/1)
     |> Enum.map(&Day2.cubes_power/1)

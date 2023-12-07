@@ -16,7 +16,7 @@ defmodule Day6 do
   end
 
   def part1(input) do
-    [timeline, distanceline] = String.split(input, "\n", limit: 1, trim: true)
+    [timeline, distanceline] = String.split(input, ~r{\R}, limit: 1, trim: true)
     times = @digits |> Regex.scan(timeline) |> Enum.map(&single_int/1)
     distances = @digits |> Regex.scan(distanceline) |> Enum.map(&single_int/1)
 
