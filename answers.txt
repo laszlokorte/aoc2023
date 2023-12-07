@@ -57,3 +57,13 @@ Part 2 Test:
 71503
 Part 2 Prod:
 20537782
+
+## Day 7 ##
+Part 1 Test:
+6440
+Part 1 Prod:
+252295678
+Part 2 Test:
+5905
+Part 2 Prod:
+250577259
