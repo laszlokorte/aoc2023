@@ -37,29 +37,29 @@ defmodule Day8 do
   end
 
   defmodule WalkStep do
-    defstruct [:current, :seen, :next_index]
+    defstruct [:current, :seen, :step_count]
 
     def new(start) do
       %WalkStep {
         current: start,
         seen: MapSet.new(),
-        next_index: 0
+        step_count: 0
       }
     end
 
-    def cycle_length(%WalkStep{seen: seen, next_index: dir_index}) do
-      Enum.count(seen) - dir_index
+    def cycle_length(%WalkStep{seen: seen, step_count: step_count}) do
+      Enum.count(seen) - step_count
     end
 
-    def walk_with_counter(%WalkStep{current: current, seen: seen}, network, {dir, dir_index}) do
+    def walk_with_counter(%WalkStep{current: current, seen: seen, step_count: steps}, network, {dir, dir_index}) do
       %WalkStep{
         current: Day8.walk(network, dir, current),
         seen: MapSet.put(seen, {dir_index, current}),
-        next_index: dir_index + 1
+        step_count: min(dir_index, steps) + 1
       }
     end
 
-    def contains_cycle?(%WalkStep{current: c, seen: s, next_index: n}) do
+    def contains_cycle?(%WalkStep{current: c, seen: s, step_count: n}) do
       MapSet.member?(s, {n, c})
     end
   end
