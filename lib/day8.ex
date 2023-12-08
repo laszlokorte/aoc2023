@@ -42,6 +42,40 @@ defmodule Day8 do
     |> MapSet.new()
   end
 
+
+
+  defmodule WalkStep do
+    defstruct [:current, :seen, :step_count]
+
+    def new(start) do
+      %WalkStep{
+        current: start,
+        seen: MapSet.new(),
+        step_count: 0
+      }
+    end
+
+    def cycle_length(%WalkStep{seen: seen, step_count: step_count}) do
+      Enum.count(seen) - step_count
+    end
+
+    def walk_with_counter(
+          %WalkStep{current: current, seen: seen, step_count: steps},
+          network,
+          {dir, dir_index}
+        ) do
+      %WalkStep{
+        current: Day8.walk(network, dir, current),
+        seen: MapSet.put(seen, {dir_index, current}),
+        step_count: min(dir_index, steps) + 1
+      }
+    end
+
+    def contains_cycle?(%WalkStep{current: c, seen: s, step_count: n}) do
+      MapSet.member?(s, {n, c})
+    end
+  end
+
   def cycle_length(network, directions, start) do
     directions
     |> Stream.with_index()
@@ -81,46 +115,12 @@ defmodule Day8 do
 
     all_starts = find_start_nodes(network, @start_suffix)
 
-    [first_cycle | _] =
-      all_cycles = all_starts |> Enum.map(&cycle_length(network, directions, &1))
-
-    [first_offset | _] =
-      all_starts |> Enum.map(&steps_to_goal(network, directions, &1, @goal_suffix))
+    all_cycles = all_starts |> Enum.map(&cycle_length(network, directions, &1))
+    all_offsets = all_starts |> Enum.map(&steps_to_goal(network, directions, &1, @goal_suffix))
 
     common_cycle = all_cycles |> Enum.reduce(1, &lcm/2)
+    {offset_of_best, cycle_of_best} = Enum.zip(all_offsets, all_cycles) |> Enum.min_by(&elem(&1, 0))
 
-    first_cycle - first_offset + common_cycle
-  end
-
-  defmodule WalkStep do
-    defstruct [:current, :seen, :step_count]
-
-    def new(start) do
-      %WalkStep{
-        current: start,
-        seen: MapSet.new(),
-        step_count: 0
-      }
-    end
-
-    def cycle_length(%WalkStep{seen: seen, step_count: step_count}) do
-      Enum.count(seen) - step_count
-    end
-
-    def walk_with_counter(
-          %WalkStep{current: current, seen: seen, step_count: steps},
-          network,
-          {dir, dir_index}
-        ) do
-      %WalkStep{
-        current: Day8.walk(network, dir, current),
-        seen: MapSet.put(seen, {dir_index, current}),
-        step_count: min(dir_index, steps) + 1
-      }
-    end
-
-    def contains_cycle?(%WalkStep{current: c, seen: s, step_count: n}) do
-      MapSet.member?(s, {n, c})
-    end
+    common_cycle - cycle_of_best + offset_of_best
   end
 end
