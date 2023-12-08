@@ -42,8 +42,6 @@ defmodule Day8 do
     |> MapSet.new()
   end
 
-
-
   defmodule WalkStep do
     defstruct [:current, :seen, :step_count]
 
@@ -119,7 +117,9 @@ defmodule Day8 do
     all_offsets = all_starts |> Enum.map(&steps_to_goal(network, directions, &1, @goal_suffix))
 
     common_cycle = all_cycles |> Enum.reduce(1, &lcm/2)
-    {offset_of_best, cycle_of_best} = Enum.zip(all_offsets, all_cycles) |> Enum.min_by(&elem(&1, 0))
+
+    {offset_of_best, cycle_of_best} =
+      Enum.zip(all_offsets, all_cycles) |> Enum.min_by(&(elem(&1, 1) - elem(&1, 0)))
 
     common_cycle - cycle_of_best + offset_of_best
   end
