@@ -30,34 +30,47 @@ defmodule Day8 do
     network[current] |> elem(1)
   end
 
-  def walk_with_counter(network, {dir, dir_index}, {current, seen, _}) do
-    {
-      walk(network, dir, current),
-      MapSet.put(seen, {dir_index, current}),
-      dir_index + 1
-    }
-  end
-
   def find_start_nodes(network, start_suffix) do
     Map.keys(network) 
     |> Enum.filter(&String.ends_with?(&1, start_suffix))
     |> MapSet.new()
   end
 
-  def contains_cycle?({current, seen, dir_index}) do
-    MapSet.member?(seen, {dir_index, current})
+  defmodule WalkStep do
+    defstruct [:current, :seen, :next_index]
+
+    def new(start) do
+      %WalkStep {
+        current: start,
+        seen: MapSet.new(),
+        next_index: 0
+      }
+    end
+
+    def cycle_length(%WalkStep{seen: seen, next_index: dir_index}) do
+      Enum.count(seen) - dir_index
+    end
+
+    def walk_with_counter(%WalkStep{current: current, seen: seen}, network, {dir, dir_index}) do
+      %WalkStep{
+        current: Day8.walk(network, dir, current),
+        seen: MapSet.put(seen, {dir_index, current}),
+        next_index: dir_index + 1
+      }
+    end
+
+    def contains_cycle?(%WalkStep{current: c, seen: s, next_index: n}) do
+      MapSet.member?(s, {n, c})
+    end
   end
 
   def cycle_length(network, directions, start) do
-    [{_, seen, dir_index}] = 
     directions 
     |> Stream.with_index 
     |> Stream.cycle
-    |> Stream.scan({start, MapSet.new(), 0}, &walk_with_counter(network, &1, &2))
-    |> Stream.filter(&contains_cycle?/1)
-    |> Enum.take(1)
-
-    Enum.count(seen) - dir_index
+    |> Stream.scan(WalkStep.new(start), &WalkStep.walk_with_counter(&2, network, &1))
+    |> Enum.find(&WalkStep.contains_cycle?/1)
+    |> WalkStep.cycle_length
   end
 
   def steps_to_goal(network, directions, start, goal_suffix) do
