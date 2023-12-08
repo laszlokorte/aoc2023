@@ -110,17 +110,9 @@ defmodule Day8 do
 
   def part2(input) do
     {directions, network} = parse_input(input)
-
-    all_starts = find_start_nodes(network, @start_suffix)
-
-    all_cycles = all_starts |> Enum.map(&cycle_length(network, directions, &1))
-    all_offsets = all_starts |> Enum.map(&steps_to_goal(network, directions, &1, @goal_suffix))
-
-    common_cycle = all_cycles |> Enum.reduce(1, &lcm/2)
-
-    {offset_of_best, cycle_of_best} =
-      Enum.zip(all_offsets, all_cycles) |> Enum.min_by(&(elem(&1, 1) - elem(&1, 0)))
-
-    common_cycle - cycle_of_best + offset_of_best
+    
+    find_start_nodes(network, @start_suffix) 
+      |> Enum.map(&cycle_length(network, directions, &1)) 
+      |> Enum.reduce(1, &lcm/2)
   end
 end
