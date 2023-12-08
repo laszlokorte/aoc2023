@@ -67,3 +67,13 @@ Part 2 Test:
 5905
 Part 2 Prod:
 250577259
+
+## Day 8 ##
+Part 1 Test:
+2
+Part 1 Prod:
+18157
+Part 2 Test:
+6
+Part 2 Prod:
+14299763833181
