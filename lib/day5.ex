@@ -25,8 +25,8 @@ defmodule Day5 do
 
   def parse_mappings_block(block) do
     Regex.scan(@mapping_pattern, block, capture: :all_but_first)
-      |> Enum.map(&to_integer_triple/1)
-      |> Enum.map(&to_mapping_entry/1)
+    |> Enum.map(&to_integer_triple/1)
+    |> Enum.map(&to_mapping_entry/1)
   end
 
   def parse_mappings(mapping_lines) do
@@ -52,7 +52,10 @@ defmodule Day5 do
   end
 
   def fill_range_gap([{src, as..ae}, {_, bs.._}]) when bs in as..ae, do: [{src, as..ae}]
-  def fill_range_gap([{src, as..ae}, {_, bs.._}]),  do: [{src, as..ae//1}, {ae + 1, (ae + 1)..(bs - 1)//1}]
+
+  def fill_range_gap([{src, as..ae}, {_, bs.._}]),
+    do: [{src, as..ae//1}, {ae + 1, (ae + 1)..(bs - 1)//1}]
+
   def fill_range_gap([_]), do: []
 
   def pack_dense_ranges(ranges, upper_limit) do
@@ -74,14 +77,14 @@ defmodule Day5 do
 
   def map_input_to_output(input, {src_start, dst_start..dst_end}) do
     clamped_start..clamped_end = clamp_range(input, dst_start..dst_end)
-    
+
     (clamped_start - dst_start + src_start)..(clamped_end - dst_start + src_start)
   end
 
   def apply_mappings_to_one_input(mappings, input) do
     mappings
-      |> Enum.filter(fn {_, dst} -> not Range.disjoint?(input, dst) end)
-      |> Enum.map(&map_input_to_output(input, &1))
+    |> Enum.filter(fn {_, dst} -> not Range.disjoint?(input, dst) end)
+    |> Enum.map(&map_input_to_output(input, &1))
   end
 
   def apply_mappings(mappings, inputs) do
@@ -94,7 +97,7 @@ defmodule Day5 do
 
   def highest_value(seeds, mappings) do
     max(
-      List.flatten(mappings) |> Enum.map(fn {s, a..b} -> s+(b-a) end) |> Enum.max(),
+      List.flatten(mappings) |> Enum.map(fn {s, a..b} -> s + (b - a) end) |> Enum.max(),
       seeds |> Enum.map(&Enum.max/1) |> Enum.max()
     )
   end

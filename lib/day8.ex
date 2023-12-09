@@ -110,9 +110,9 @@ defmodule Day8 do
 
   def part2(input) do
     {directions, network} = parse_input(input)
-    
-    find_start_nodes(network, @start_suffix) 
-      |> Enum.map(&cycle_length(network, directions, &1)) 
-      |> Enum.reduce(1, &lcm/2)
+
+    find_start_nodes(network, @start_suffix)
+    |> Enum.map(&cycle_length(network, directions, &1))
+    |> Enum.reduce(1, &lcm/2)
   end
 end

@@ -38,11 +38,11 @@ defmodule AOC do
           """
           defmodule Day#{day} do
             use AOC, day: #{day}
-          
+
             def part1(input) do
               input
             end
-          
+
             def part2(input) do
               input
             end
