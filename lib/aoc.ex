@@ -8,6 +8,7 @@ defmodule AOC do
     {:consolidated, days} = Day.__protocol__(:impls)
 
     days
+    |> Enum.sort_by(fn d -> Day.number(struct(d, [])) end)
     |> Enum.each(fn d ->
       IO.puts("## Day #{Day.number(struct(d, []))} ##")
       IO.puts("Part 1 Test:")

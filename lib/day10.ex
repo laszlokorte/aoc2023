@@ -3,6 +3,7 @@ defmodule Day10 do
   require Integer
 
   @linke_break_pattern ~r{\R}
+  @biased_vertical_pipes ["F", "7", "|"]
 
   def pipe("|", :down), do: :down
   def pipe("|", :up), do: :up
@@ -18,11 +19,11 @@ defmodule Day10 do
   def pipe("F", :left), do: :down
   def pipe(_, _), do: nil
 
-  def step(:up, {x,y}), do: {x,y-1}
-  def step(:down, {x,y}), do: {x,y+1}
-  def step(:left, {x,y}), do: {x-1,y}
-  def step(:right, {x,y}), do: {x+1,y}
-  def step(nil, {x,y}), do: {x,y}
+  def step(:up, {x, y}), do: {x, y - 1}
+  def step(:down, {x, y}), do: {x, y + 1}
+  def step(:left, {x, y}), do: {x - 1, y}
+  def step(:right, {x, y}), do: {x + 1, y}
+  def step(nil, {x, y}), do: {x, y}
 
   def goes_down("|", :down), do: 1
   def goes_down("|", :up), do: -1
@@ -41,14 +42,14 @@ defmodule Day10 do
   def parse_pipes(input) do
     input
     |> String.split(@linke_break_pattern)
-    |> Enum.with_index
+    |> Enum.with_index()
     |> Enum.flat_map(fn {line, y} ->
       line
-      |> String.codepoints
-      |> Enum.with_index
-      |> Enum.map(fn {pipe, x} -> {{x,y}, pipe} end)
+      |> String.codepoints()
+      |> Enum.with_index()
+      |> Enum.map(fn {pipe, x} -> {{x, y}, pipe} end)
     end)
-    |> Enum.into(Map.new)
+    |> Enum.into(Map.new())
   end
 
   def walk_on(pipe_map, pos, dir) do
@@ -70,50 +71,63 @@ defmodule Day10 do
       end)
       |> Stream.take_while(fn {_, d} -> d != nil end)
       |> Stream.take_while(fn {pos, _} -> pos != start_pos end)
-      |> Enum.into(MapSet.new())
-      |> MapSet.put({start_pos, dir})
+      |> Enum.concat([{start_pos, dir}])
     end)
     |> Enum.max_by(&Enum.count/1)
+  end
+
+  def fillin_start(pipe_map) do
+    {{sx, sy}, "S"} = Enum.find(pipe_map, &(elem(&1, 1) == "S"))
+
+    Map.put(pipe_map, {sx, sy}, "|")
   end
 
   def part1(input) do
     pipe_map = parse_pipes(input)
 
-    longest_loop(pipe_map) |> Enum.count |> Integer.floor_div(2)
+    longest_loop(pipe_map)
+    |> Enum.count()
+    |> Integer.floor_div(2)
   end
 
-  def grid_ray(start, {dx, dy}, {maxx, maxy}) do
+  def cast_grid_ray(start, {dx, dy}, {maxx, maxy}) do
     start
     |> Stream.iterate(fn
-      {x,y} -> {x+dx,y+dy}
+      {x, y} -> {x + dx, y + dy}
     end)
-    |> Stream.take_while(fn {x,y} -> x <= maxx && y <= maxy && x >= 0 && y >= 0 end)
+    |> Stream.take_while(fn {x, y} -> x <= maxx && y <= maxy && x >= 0 && y >= 0 end)
   end
 
   def part2(input) do
     pipe_map = parse_pipes(input)
-    used_pipes = longest_loop(pipe_map)
-    used_positions = used_pipes |> Enum.map(fn {p, _} -> p end) |> Enum.into(MapSet.new())
 
-    {{maxx, maxy}, _} = pipe_map |> Enum.max_by(fn {{x,y}, _} -> x*y end)
+    used_pipes =
+      longest_loop(pipe_map)
+      |> Enum.into(MapSet.new())
 
-    cols = 0..maxx
-    rows = 0..maxy
+    used_positions =
+      used_pipes
+      |> Enum.map(fn {p, _} -> p end)
+      |> Enum.into(MapSet.new())
 
-    rows |> Enum.map(fn y ->
-      cols |> Enum.count(fn x ->
-        (not MapSet.member?(used_positions, {x,y}))
-        && (grid_ray({x,y}, {1, 0}, {maxx, maxy})
-                |> Enum.filter(&MapSet.member?(used_positions, &1))
-                |> Enum.map(&(pipe_map[&1]))
-                |> Enum.reduce(0, fn
-                  "F", c -> c+1
-                  "7", c -> c+1
-                  "|", c -> c+1
-                  "S", c -> c+1
-                  _ , c -> c
-                end)) |> Integer.is_odd
+    {{maxx, maxy}, _} =
+      pipe_map
+      |> Enum.max_by(fn {{x, y}, _} -> x * y end)
+
+    pipe_map = fillin_start(pipe_map)
+
+    0..maxy
+    |> Enum.map(fn y ->
+      0..maxx
+      |> Enum.count(fn x ->
+        not MapSet.member?(used_positions, {x, y}) &&
+          cast_grid_ray({x, y}, {1, 0}, {maxx, maxy})
+          |> Enum.filter(&MapSet.member?(used_positions, &1))
+          |> Enum.map(&pipe_map[&1])
+          |> Enum.count(&(&1 in @biased_vertical_pipes))
+          |> Integer.is_odd()
       end)
-    end) |> Enum.sum
+    end)
+    |> Enum.sum()
   end
 end
