@@ -4,6 +4,7 @@ defmodule Day10 do
 
   @linke_break_pattern ~r{\R}
   @biased_vertical_pipes ["F", "7", "|"]
+  @ray_direction {1, 0}
 
   def pipe("|", :down), do: :down
   def pipe("|", :up), do: :up
@@ -76,6 +77,7 @@ defmodule Day10 do
     |> Enum.max_by(&Enum.count/1)
   end
 
+  # TODO fill in correct direction instead of "|"
   def fillin_start(pipe_map) do
     {{sx, sy}, "S"} = Enum.find(pipe_map, &(elem(&1, 1) == "S"))
 
@@ -121,7 +123,7 @@ defmodule Day10 do
       0..maxx
       |> Enum.count(fn x ->
         not MapSet.member?(used_positions, {x, y}) &&
-          cast_grid_ray({x, y}, {1, 0}, {maxx, maxy})
+          cast_grid_ray({x, y}, @ray_direction, {maxx, maxy})
           |> Enum.filter(&MapSet.member?(used_positions, &1))
           |> Enum.map(&pipe_map[&1])
           |> Enum.count(&(&1 in @biased_vertical_pipes))
