@@ -3,8 +3,8 @@ defmodule Day10 do
   require Integer
 
   @linke_break_pattern ~r{\R}
-  @biased_vertical_pipes ["F", "7", "|"]
-  @ray_direction {1, 0}
+  @biased_vertical_pipes ["F", "J", "|", "-"]
+  @ray_direction {1, 1}
 
   def pipe("|", :down), do: :down
   def pipe("|", :up), do: :up
@@ -26,19 +26,18 @@ defmodule Day10 do
   def step(:right, {x, y}), do: {x + 1, y}
   def step(nil, {x, y}), do: {x, y}
 
-  def goes_down("|", :down), do: 1
-  def goes_down("|", :up), do: -1
-  def goes_down("-", :left), do: 0
-  def goes_down("-", :right), do: 0
-  def goes_down("L", :down), do: 1
-  def goes_down("L", :left), do: -1
-  def goes_down("J", :down), do: 1
-  def goes_down("J", :right), do: -1
-  def goes_down("7", :up), do: -1
-  def goes_down("7", :right), do: 1
-  def goes_down("F", :up), do: -1
-  def goes_down("F", :left), do: 1
-  def goes_down(_, _), do: nil
+  def bending_piece(:up, :up), do: "|"
+  def bending_piece(:up, :left), do: "7"
+  def bending_piece(:up, :right), do: "F"
+  def bending_piece(:down, :down), do: "|"
+  def bending_piece(:down, :left), do: "J"
+  def bending_piece(:down, :right), do: "L"
+  def bending_piece(:left, :left), do: "-"
+  def bending_piece(:left, :up), do: "L"
+  def bending_piece(:left, :down), do: "F"
+  def bending_piece(:right, :right), do: "-"
+  def bending_piece(:right, :down), do: "7"
+  def bending_piece(:right, :up), do: "J"
 
   def parse_pipes(input) do
     input
@@ -53,83 +52,97 @@ defmodule Day10 do
     |> Enum.into(Map.new())
   end
 
-  def walk_on(pipe_map, pos, dir) do
+  def walk_on(pipe_map, {pos, dir}) do
     next_dir = pipe(pipe_map[pos], dir)
 
     {step(next_dir, pos), next_dir}
   end
 
+  def find_start(pipe_map) do
+    pipe_map
+    |> Enum.find(&(elem(&1, 1) == "S"))
+    |> elem(0)
+  end
+
+  def follow_pipe_from(pipe_map, start_pos, dir) do
+    {step(dir, start_pos), dir}
+    |> Stream.iterate(&walk_on(pipe_map, &1))
+    |> Stream.take_while(fn {_, d} -> d != nil end)
+    |> Stream.take_while(fn {pos, _} -> pos != start_pos end)
+    |> Enum.concat([{start_pos, dir}])
+  end
+
   def longest_loop(pipe_map) do
-    {start_pos, "S"} = Enum.find(pipe_map, &(elem(&1, 1) == "S"))
+    start_pos = find_start(pipe_map)
 
     [:up, :right, :left, :down]
-    |> Enum.map(fn dir ->
-      first_step = step(dir, start_pos)
-
-      {first_step, dir}
-      |> Stream.iterate(fn
-        {pos, d} -> walk_on(pipe_map, pos, d)
-      end)
-      |> Stream.take_while(fn {_, d} -> d != nil end)
-      |> Stream.take_while(fn {pos, _} -> pos != start_pos end)
-      |> Enum.concat([{start_pos, dir}])
-    end)
+    |> Enum.map(&follow_pipe_from(pipe_map, start_pos, &1))
     |> Enum.max_by(&Enum.count/1)
   end
 
-  # TODO fill in correct direction instead of "|"
-  def fillin_start(pipe_map) do
-    {{sx, sy}, "S"} = Enum.find(pipe_map, &(elem(&1, 1) == "S"))
+  def fillin_start(pipe_map, loop) do
+    {_, first_direction} = Enum.at(loop, 0)
+    {_, last_direction} = Enum.at(loop, -2)
 
-    Map.put(pipe_map, {sx, sy}, "|")
+    start_piece = bending_piece(first_direction, last_direction)
+
+    Map.put(pipe_map, find_start(pipe_map), start_piece)
+  end
+
+  def is_in_bounds({x, y}, {maxx, maxy}) do
+    x in 0..maxx && y in 0..maxy
+  end
+
+  def ray_step({x, y}, {dx, dy}) do
+    {x + dx, y + dy}
+  end
+
+  def cast_grid_ray(start, direction, bounds) do
+    start
+    |> Stream.iterate(&ray_step(&1, direction))
+    |> Stream.take_while(&is_in_bounds(&1, bounds))
+  end
+
+  def grid_size(pipe_map) do
+    pipe_map
+    |> Enum.max_by(fn {{x, y}, _} -> x * y end)
+    |> elem(0)
   end
 
   def part1(input) do
-    pipe_map = parse_pipes(input)
-
-    longest_loop(pipe_map)
+    parse_pipes(input)
+    |> longest_loop
     |> Enum.count()
     |> Integer.floor_div(2)
   end
 
-  def cast_grid_ray(start, {dx, dy}, {maxx, maxy}) do
-    start
-    |> Stream.iterate(fn
-      {x, y} -> {x + dx, y + dy}
-    end)
-    |> Stream.take_while(fn {x, y} -> x <= maxx && y <= maxy && x >= 0 && y >= 0 end)
+  def ray_count_hits(pipe_map, used_positions, ray) do
+    ray
+    |> Enum.filter(&MapSet.member?(used_positions, &1))
+    |> Enum.map(&pipe_map[&1])
+    |> Enum.count(&(&1 in @biased_vertical_pipes))
   end
 
   def part2(input) do
     pipe_map = parse_pipes(input)
-
-    used_pipes =
-      longest_loop(pipe_map)
-      |> Enum.into(MapSet.new())
+    loop = longest_loop(pipe_map)
+    pipe_map = fillin_start(pipe_map, loop)
 
     used_positions =
-      used_pipes
+      loop
       |> Enum.map(fn {p, _} -> p end)
       |> Enum.into(MapSet.new())
 
-    {{maxx, maxy}, _} =
-      pipe_map
-      |> Enum.max_by(fn {{x, y}, _} -> x * y end)
+    {maxx, maxy} = size = grid_size(pipe_map)
 
-    pipe_map = fillin_start(pipe_map)
+    test_candiates =
+      for x <- 0..maxx, y <- 0..maxy, not MapSet.member?(used_positions, {x, y}), do: {x, y}
 
-    0..maxy
-    |> Enum.map(fn y ->
-      0..maxx
-      |> Enum.count(fn x ->
-        not MapSet.member?(used_positions, {x, y}) &&
-          cast_grid_ray({x, y}, @ray_direction, {maxx, maxy})
-          |> Enum.filter(&MapSet.member?(used_positions, &1))
-          |> Enum.map(&pipe_map[&1])
-          |> Enum.count(&(&1 in @biased_vertical_pipes))
-          |> Integer.is_odd()
-      end)
+    test_candiates
+    |> Enum.count(fn {x, y} ->
+      cast_grid_ray({x, y}, @ray_direction, size)
+      |> (&ray_count_hits(pipe_map, used_positions, &1)).()
+      |> Integer.is_odd()
     end)
-    |> Enum.sum()
   end
 end
