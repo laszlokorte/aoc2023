@@ -1,4 +1,4 @@
-Compiling 11 files (.ex)
+Compiling 1 file (.ex)
 ## Day 1 ##
 Part 1 Test:
 142
@@ -98,4 +98,14 @@ Part 2 Test:
 10
 Part 2 Prod:
 477
+
+## Day 11 ##
+Part 1 Test:
+374
+Part 1 Prod:
+9177603
+Part 2 Test:
+82000210
+Part 2 Prod:
+632003913611
 
