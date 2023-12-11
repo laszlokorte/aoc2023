@@ -39,6 +39,14 @@ defmodule Day10 do
   def bending_piece(:right, :down), do: "7"
   def bending_piece(:right, :up), do: "J"
 
+  def unicode("|"), do: "┃"
+  def unicode("-"), do: "━"
+  def unicode("L"), do: "┗"
+  def unicode("J"), do: "┛"
+  def unicode("7"), do: "┓"
+  def unicode("F"), do: "┏"
+  def unicode("."), do: " "
+
   def parse_pipes(input) do
     input
     |> String.split(@linke_break_pattern)
@@ -84,7 +92,7 @@ defmodule Day10 do
     {_, first_direction} = Enum.at(loop, 0)
     {_, last_direction} = Enum.at(loop, -2)
 
-    start_piece = bending_piece(first_direction, last_direction)
+    start_piece = bending_piece(last_direction, first_direction)
 
     Map.put(pipe_map, find_start(pipe_map), start_piece)
   end
@@ -144,5 +152,42 @@ defmodule Day10 do
       |> (&ray_count_hits(pipe_map, used_positions, &1)).()
       |> Integer.is_odd()
     end)
+  end
+
+  def debug_prod do
+    debug(@proddata)
+  end
+
+  def debug_test2 do
+    debug(@test2data)
+  end
+
+  def debug(input) do
+    pipe_map = parse_pipes(input)
+    loop = longest_loop(pipe_map)
+    pipe_map = fillin_start(pipe_map, loop)
+    used_positions =
+      loop
+      |> Enum.map(fn {p, _} -> p end)
+      |> Enum.into(MapSet.new())
+    {maxx, maxy} = size = grid_size(pipe_map)
+
+    for y <- 0..maxy do
+      for x <- 0..maxx do
+        if MapSet.member?(used_positions, {x,y}) do
+          IO.write(unicode(pipe_map[{x,y}]))
+        else
+          is_inside = cast_grid_ray({x, y}, @ray_direction, size)
+            |> (&ray_count_hits(pipe_map, used_positions, &1)).()
+            |> Integer.is_odd()
+          if is_inside do
+            IO.write("x")
+          else
+            IO.write(" ")
+          end
+        end
+      end
+      IO.puts("")
+    end
   end
 end
