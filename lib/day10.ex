@@ -109,18 +109,18 @@ defmodule Day10 do
     |> elem(0)
   end
 
-  def part1(input) do
-    parse_pipes(input)
-    |> longest_loop
-    |> Enum.count()
-    |> Integer.floor_div(2)
-  end
-
   def ray_count_hits(pipe_map, used_positions, ray) do
     ray
     |> Enum.filter(&MapSet.member?(used_positions, &1))
     |> Enum.map(&pipe_map[&1])
     |> Enum.count(&(&1 in @biased_vertical_pipes))
+  end
+
+  def part1(input) do
+    parse_pipes(input)
+    |> longest_loop
+    |> Enum.count()
+    |> Integer.floor_div(2)
   end
 
   def part2(input) do
