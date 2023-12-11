@@ -2,6 +2,8 @@ defmodule Day11 do
   use AOC, day: 11
 
   @linke_break_pattern ~r{\R}
+  @galaxy_symbol "#"
+  @emptiness_symbol "."
 
   def find_galaxies(input) do
     input
@@ -11,10 +13,14 @@ defmodule Day11 do
     |> Enum.flat_map(fn {lines, y} ->
       lines
       |> Enum.with_index()
-      |> Enum.filter(&(elem(&1, 0) == "#"))
+      |> Enum.filter(&(elem(&1, 0) == @galaxy_symbol))
       |> Enum.map(fn {_, x} -> {x, y} end)
     end)
     |> Enum.into(MapSet.new())
+  end
+
+  def all_chars_same({chars, _}, char) do
+    chars |> Enum.all?(&(&1 == @emptiness_symbol))
   end
 
   def find_emptyness(input) do
@@ -24,7 +30,7 @@ defmodule Day11 do
       lines
       |> Enum.map(&String.codepoints/1)
       |> Enum.with_index()
-      |> Enum.filter(fn {row, _} -> row |> Enum.all?(&(&1 == ".")) end)
+      |> Enum.filter(&all_chars_same(&1, @emptiness_symbol))
       |> Enum.map(&elem(&1, 1))
 
     empty_columns =
@@ -33,7 +39,7 @@ defmodule Day11 do
       |> Enum.zip()
       |> Enum.map(&Tuple.to_list/1)
       |> Enum.with_index()
-      |> Enum.filter(fn {column, _} -> column |> Enum.all?(&(&1 == ".")) end)
+      |> Enum.filter(&all_chars_same(&1, @emptiness_symbol))
       |> Enum.map(&elem(&1, 1))
 
     {empty_rows, empty_columns}
