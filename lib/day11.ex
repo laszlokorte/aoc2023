@@ -20,7 +20,7 @@ defmodule Day11 do
   end
 
   def all_chars_same({chars, _}, char) do
-    chars |> Enum.all?(&(&1 == @emptiness_symbol))
+    chars |> Enum.all?(&(&1 == char))
   end
 
   def find_emptyness(input) do
