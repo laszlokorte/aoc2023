@@ -57,15 +57,15 @@ defmodule AOC do
     quote do
       defstruct []
 
-      @externalResource unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-test-1.txt")
-      @externalResource unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-test-2.txt")
-      @externalResource unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-prod.txt")
+      @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-test-1.txt")
+      @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-test-2.txt")
+      @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-prod.txt")
 
-      @test1data File.read(unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-test-1.txt"))
+      @test1data File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-test-1.txt"))
                  |> elem(1)
-      @test2data File.read(unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-test-2.txt"))
+      @test2data File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-test-2.txt"))
                  |> elem(1)
-      @proddata File.read(unquote(~c"inputs/day-#{Keyword.get(opts, :day)}-prod.txt")) |> elem(1)
+      @proddata File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-prod.txt")) |> elem(1)
 
       def part1_test do
         IO.puts(part1(@test1data))
