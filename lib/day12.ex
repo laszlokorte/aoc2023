@@ -71,36 +71,30 @@ defmodule Day12 do
     @spring_state_operational "."
     @spring_state_unknown "?"
 
-    defmemo(count_combinations([], []), do: 1)
-    defmemo(count_combinations([], [_ | _]), do: 0)
+    defmemo(count_combo([], []), do: 1)
+    defmemo(count_combo([], [_ | _]), do: 0)
 
-    defmemo count_combinations(pattern, []) do
-      if Enum.member?(pattern, @spring_state_damaged) do
-        0
-      else
-        1
-      end
-    end
+    defmemo(count_combo(pattern, []),
+      do: if(Enum.member?(pattern, @spring_state_damaged), do: 0, else: 1)
+    )
 
-    defmemo count_combinations(pattern, nums) do
-      count_combinations_skip(pattern, nums) + count_combinations_take(pattern, nums)
-    end
+    defmemo(count_combo(pattern, nums),
+      do: count_combo_skip(pattern, nums) + count_combo_take(pattern, nums)
+    )
 
-    def count_combinations_skip([@spring_state_operational | rest], nums), do: count_combinations(rest, nums)
-    def count_combinations_skip([@spring_state_unknown | rest], nums), do: count_combinations(rest, nums)
-    def count_combinations_skip(_, _), do: 0
+    def count_combo_skip([@spring_state_operational | rest], nums), do: count_combo(rest, nums)
+    def count_combo_skip([@spring_state_unknown | rest], nums), do: count_combo(rest, nums)
+    def count_combo_skip(_, _), do: 0
 
-    def count_combinations_take([@spring_state_operational, _], _), do: 0
+    def count_combo_take([@spring_state_operational, _], _), do: 0
 
-    def count_combinations_take(pattern, nums) do
+    def count_combo_take(pattern, nums) do
       [_ | rest_pattern] = pattern
       [headn | rest_nums] = nums
 
-      if still_valid(pattern, headn) do
-        count_combinations(Enum.slice(rest_pattern, headn..Enum.count(rest_pattern)), rest_nums)
-      else
-        0
-      end
+      unless still_valid(pattern, headn),
+        do: 0,
+        else: count_combo(Enum.slice(rest_pattern, headn..Enum.count(rest_pattern)), rest_nums)
     end
 
     def still_valid(pattern, headn) do
@@ -108,32 +102,36 @@ defmodule Day12 do
         not Enum.member?(Enum.slice(pattern, 0..(headn - 1)), @spring_state_operational) and
         (headn == Enum.count(pattern) or Enum.at(pattern, headn) != @spring_state_damaged)
     end
+
+    def count_combinations(p, c), do: count_combo(p, c)
   end
 
   def parse_line(line, multiplier \\ 1) do
     [pattern, counts] = String.split(line, @space, parts: 2)
 
-    counted_springs =
+    springs =
       pattern
       |> List.duplicate(multiplier)
       |> Enum.join(@space_between_reps)
       |> String.codepoints()
 
-    spring_counts =
+    damage_counts =
       counts
       |> List.duplicate(multiplier)
       |> Enum.join(@comma)
       |> String.split(@comma)
       |> Enum.map(&String.to_integer/1)
 
-    {counted_springs, spring_counts}
+    {springs, damage_counts}
   end
 
   def part1(input) do
     input
     |> String.split(@linke_break_pattern)
     |> Enum.map(&parse_line(&1))
-    |> Enum.map(fn {s, c} -> IterativeSolutuon.count_combinations(s, c) end)
+    # Alternative:
+    # |> Enum.map(fn {s, c} -> IterativeSolutuon.count_combinations(s, c) end)
+    |> Enum.map(fn {s, c} -> RecursiveSolution.count_combinations(s, c) end)
     |> Enum.sum()
   end
 
@@ -141,6 +139,8 @@ defmodule Day12 do
     input
     |> String.split(@linke_break_pattern)
     |> Enum.map(&parse_line(&1, @part2_multiplier))
+    # Alternative:
+    # |> Enum.map(fn {s, c} -> IterativeSolutuon.count_combinations(s, c) end)
     |> Enum.map(fn {s, c} -> RecursiveSolution.count_combinations(s, c) end)
     |> Enum.sum()
   end
