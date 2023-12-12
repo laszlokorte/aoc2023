@@ -27,33 +27,34 @@ defmodule Day12 do
       |> Enum.join(@comma)
       |> String.split(@comma)
       |> Enum.map(&String.to_integer/1)
+      |> Enum.into(<<>>, fn num -> <<num :: 8>> end)
 
     {springs, damage_counts}
   end
 
   defmemo ramaining_combos(springs, counts, in_seq) do
     case {springs, counts, in_seq} do
-      {<<>>, [], false} ->
+      {<<>>, <<>>, false} ->
         1
 
-      {<<>>, [0], true} ->
+      {<<>>, <<0>>, true} ->
         1
 
-      {<<@spring_operational, rest::binary>>, [0 | counts], true} ->
+      {<<@spring_operational, rest::binary>>, <<0 , counts::binary>>, true} ->
         ramaining_combos(rest, counts, false)
 
       {<<@spring_operational, rest::binary>>, counts, false} ->
         ramaining_combos(rest, counts, false)
 
-      {<<@spring_damaged, rest::binary>>, [count_head | count_rst], _} ->
-        ramaining_combos(rest, [count_head - 1 | count_rst], true)
+      {<<@spring_damaged, rest::binary>>, <<count_head , count_rst::binary>>, _} ->
+        ramaining_combos(rest, <<count_head - 1 , count_rst::binary>>, true)
 
-      {<<@spring_unknown, rest::binary>>, [count_head | count_rst], inseq} ->
-        ramaining_combos(<<@spring_operational, rest::binary>>, [count_head | count_rst], inseq) +
-          ramaining_combos(<<@spring_damaged, rest::binary>>, [count_head | count_rst], inseq)
+      {<<@spring_unknown, rest::binary>>, <<count_head , count_rst::binary>>, inseq} ->
+        ramaining_combos(<<@spring_operational, rest::binary>>, <<count_head , count_rst::binary>>, inseq) +
+          ramaining_combos(<<@spring_damaged, rest::binary>>, <<count_head , count_rst::binary>>, inseq)
 
-      {<<@spring_unknown, rest::binary>>, [], false} ->
-        ramaining_combos(rest, [], false)
+      {<<@spring_unknown, rest::binary>>, <<>>, false} ->
+        ramaining_combos(rest, <<>>, false)
 
       {_, _, _} ->
         0
