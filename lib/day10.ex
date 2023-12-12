@@ -166,20 +166,24 @@ defmodule Day10 do
     pipe_map = parse_pipes(input)
     loop = longest_loop(pipe_map)
     pipe_map = fillin_start(pipe_map, loop)
+
     used_positions =
       loop
       |> Enum.map(fn {p, _} -> p end)
       |> Enum.into(MapSet.new())
+
     {maxx, maxy} = size = grid_size(pipe_map)
 
     for y <- 0..maxy do
       for x <- 0..maxx do
-        if MapSet.member?(used_positions, {x,y}) do
-          IO.write(unicode(pipe_map[{x,y}]))
+        if MapSet.member?(used_positions, {x, y}) do
+          IO.write(unicode(pipe_map[{x, y}]))
         else
-          is_inside = cast_grid_ray({x, y}, @ray_direction, size)
+          is_inside =
+            cast_grid_ray({x, y}, @ray_direction, size)
             |> (&ray_count_hits(pipe_map, used_positions, &1)).()
             |> Integer.is_odd()
+
           if is_inside do
             IO.write("x")
           else
@@ -187,6 +191,7 @@ defmodule Day10 do
           end
         end
       end
+
       IO.puts("")
     end
   end
