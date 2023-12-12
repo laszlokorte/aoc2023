@@ -109,3 +109,12 @@ Part 2 Test:
 Part 2 Prod:
 632003913611
 
+## Day 12 ##
+Part 1 Test:
+21
+Part 1 Prod:
+7025
+Part 2 Test:
+525152
+Part 2 Prod:
+11461095383315
