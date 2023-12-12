@@ -39,20 +39,20 @@ defmodule Day12 do
       {<<>>, [0], true} ->
         1
 
-      {<<@spring_operational, rest :: binary>>, [0 | counts], true} ->
+      {<<@spring_operational, rest::binary>>, [0 | counts], true} ->
         ramaining_combos(rest, counts, false)
 
-      {<<@spring_operational, rest :: binary>>, counts, false} ->
+      {<<@spring_operational, rest::binary>>, counts, false} ->
         ramaining_combos(rest, counts, false)
 
-      {<<@spring_damaged, rest :: binary>>, [count_head | count_rst], _} ->
+      {<<@spring_damaged, rest::binary>>, [count_head | count_rst], _} ->
         ramaining_combos(rest, [count_head - 1 | count_rst], true)
 
-      {<<@spring_unknown, rest :: binary>>, [count_head | count_rst], inseq} ->
-        ramaining_combos(<<@spring_operational, rest :: binary>>, [count_head | count_rst], inseq) +
-          ramaining_combos(<<@spring_damaged, rest :: binary>>, [count_head | count_rst], inseq)
+      {<<@spring_unknown, rest::binary>>, [count_head | count_rst], inseq} ->
+        ramaining_combos(<<@spring_operational, rest::binary>>, [count_head | count_rst], inseq) +
+          ramaining_combos(<<@spring_damaged, rest::binary>>, [count_head | count_rst], inseq)
 
-      {<<@spring_unknown, rest :: binary>>, [], false} ->
+      {<<@spring_unknown, rest::binary>>, [], false} ->
         ramaining_combos(rest, [], false)
 
       {_, _, _} ->
