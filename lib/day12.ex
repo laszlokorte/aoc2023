@@ -9,9 +9,9 @@ defmodule Day12 do
   @space_between_reps "?"
   @part2_multiplier 5
 
-  @spring_operational "."
-  @spring_damaged "#"
-  @spring_unknown "?"
+  @spring_operational ?.
+  @spring_damaged ?#
+  @spring_unknown ??
 
   def parse_line(line, multiplier \\ 1) do
     [pattern, counts] = String.split(line, @space, parts: 2)
@@ -20,7 +20,6 @@ defmodule Day12 do
       pattern
       |> List.duplicate(multiplier)
       |> Enum.join(@space_between_reps)
-      |> String.codepoints()
 
     damage_counts =
       counts
@@ -34,26 +33,26 @@ defmodule Day12 do
 
   defmemo ramaining_combos(springs, counts, in_seq) do
     case {springs, counts, in_seq} do
-      {[], [], false} ->
+      {<<>>, [], false} ->
         1
 
-      {[], [0], true} ->
+      {<<>>, [0], true} ->
         1
 
-      {[@spring_operational | rest], [0 | counts], true} ->
+      {<<@spring_operational, rest :: binary>>, [0 | counts], true} ->
         ramaining_combos(rest, counts, false)
 
-      {[@spring_operational | rest], counts, false} ->
+      {<<@spring_operational, rest :: binary>>, counts, false} ->
         ramaining_combos(rest, counts, false)
 
-      {[@spring_damaged | rest], [count_head | count_rst], _} ->
+      {<<@spring_damaged, rest :: binary>>, [count_head | count_rst], _} ->
         ramaining_combos(rest, [count_head - 1 | count_rst], true)
 
-      {[@spring_unknown | rest], [count_head | count_rst], inseq} ->
-        ramaining_combos(["." | rest], [count_head | count_rst], inseq) +
-          ramaining_combos([@spring_damaged | rest], [count_head | count_rst], inseq)
+      {<<@spring_unknown, rest :: binary>>, [count_head | count_rst], inseq} ->
+        ramaining_combos(<<@spring_operational, rest :: binary>>, [count_head | count_rst], inseq) +
+          ramaining_combos(<<@spring_damaged, rest :: binary>>, [count_head | count_rst], inseq)
 
-      {[@spring_unknown | rest], [], false} ->
+      {<<@spring_unknown, rest :: binary>>, [], false} ->
         ramaining_combos(rest, [], false)
 
       {_, _, _} ->
@@ -61,7 +60,7 @@ defmodule Day12 do
     end
   end
 
-  def count_combinations(a, b) do
+  def count_combinations({a, b}) do
     ramaining_combos(a, b, false)
   end
 
@@ -69,7 +68,7 @@ defmodule Day12 do
     input
     |> String.split(@linke_break_pattern)
     |> Enum.map(&parse_line(&1))
-    |> Enum.map(fn {s, c} -> count_combinations(s, c) end)
+    |> Enum.map(&count_combinations/1)
     |> Enum.sum()
   end
 
@@ -77,7 +76,7 @@ defmodule Day12 do
     input
     |> String.split(@linke_break_pattern)
     |> Enum.map(&parse_line(&1, @part2_multiplier))
-    |> Enum.map(fn {s, c} -> count_combinations(s, c) end)
+    |> Enum.map(&count_combinations/1)
     |> Enum.sum()
   end
 end
