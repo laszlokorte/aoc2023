@@ -128,3 +128,13 @@ Part 2 Test:
 400
 Part 2 Prod:
 30844
+
+## Day 14 ##
+Part 1 Test:
+136
+Part 1 Prod:
+113456
+Part 2 Test:
+64
+Part 2 Prod:
+118747
