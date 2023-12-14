@@ -118,3 +118,13 @@ Part 2 Test:
 525152
 Part 2 Prod:
 11461095383315
+
+## Day 13 ##
+Part 1 Test:
+405
+Part 1 Prod:
+30535
+Part 2 Test:
+400
+Part 2 Prod:
+30844
