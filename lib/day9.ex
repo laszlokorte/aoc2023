@@ -1,7 +1,7 @@
 defmodule Day9 do
   use AOC, day: 9
 
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
   @spaces ~r{\s+}
 
   def predict_next(seq) do
@@ -24,7 +24,7 @@ defmodule Day9 do
 
   def sum_predicted(input, predictor) do
     input
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.map(&String.split(&1, @spaces))
     |> Enum.map(fn l -> Enum.map(l, &String.to_integer/1) end)
     |> Enum.map(predictor)

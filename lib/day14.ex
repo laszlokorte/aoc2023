@@ -5,7 +5,7 @@ defmodule Day14 do
   @part2_cycle_count 1_000_000_000
 
   defmodule StoneMap do
-    @linke_break_pattern ~r{\R}
+    @line_break_pattern ~r{\R}
 
     @round_piece "O"
     @cube_piece "#"
@@ -69,7 +69,7 @@ defmodule Day14 do
     end
 
     def parse(input) do
-      lines = input |> String.split(@linke_break_pattern, trim: true)
+      lines = input |> String.split(@line_break_pattern, trim: true)
       height = Enum.count(lines)
       width = String.length(Enum.at(lines, 0))
 

@@ -1,13 +1,13 @@
 defmodule Day11 do
   use AOC, day: 11
 
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
   @galaxy_symbol "#"
   @emptiness_symbol "."
 
   def find_galaxies(input) do
     input
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.map(&String.codepoints/1)
     |> Enum.with_index()
     |> Enum.flat_map(fn {lines, y} ->
@@ -24,7 +24,7 @@ defmodule Day11 do
   end
 
   def find_emptyness(input) do
-    lines = input |> String.split(@linke_break_pattern)
+    lines = input |> String.split(@line_break_pattern)
 
     empty_rows =
       lines

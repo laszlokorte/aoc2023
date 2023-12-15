@@ -2,7 +2,7 @@ defmodule Day13 do
   use AOC, day: 13
 
   @blank_line ~r{\R\R}
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
 
   def parse_cell("#"), do: 1
   def parse_cell("."), do: 0
@@ -10,7 +10,7 @@ defmodule Day13 do
   def parse_grid(input) do
     grid =
       input
-      |> String.split(@linke_break_pattern, trim: true)
+      |> String.split(@line_break_pattern, trim: true)
       |> Enum.map(&String.codepoints/1)
       |> Enum.map(fn line -> Enum.map(line, &parse_cell/1) end)
 

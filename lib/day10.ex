@@ -2,7 +2,7 @@ defmodule Day10 do
   use AOC, day: 10
   require Integer
 
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
   @biased_vertical_pipes ["F", "J", "|", "-"]
   @ray_direction {1, 1}
 
@@ -49,7 +49,7 @@ defmodule Day10 do
 
   def parse_pipes(input) do
     input
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.with_index()
     |> Enum.flat_map(fn {line, y} ->
       line

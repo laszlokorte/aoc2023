@@ -3,7 +3,7 @@ defmodule Day12 do
 
   use Memoize
 
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
   @comma ","
   @space " "
   @space_between_reps "?"
@@ -75,7 +75,7 @@ defmodule Day12 do
 
   def part1(input) do
     input
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.map(&parse_line(&1))
     |> Enum.map(&count_combinations/1)
     |> Enum.sum()
@@ -83,7 +83,7 @@ defmodule Day12 do
 
   def part2(input) do
     input
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.map(&parse_line(&1, @part2_multiplier))
     |> Enum.map(&count_combinations/1)
     |> Enum.sum()
