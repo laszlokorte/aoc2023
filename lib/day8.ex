@@ -1,7 +1,7 @@
 defmodule Day8 do
   use AOC, day: 8
 
-  @linke_break_pattern ~r{\R}
+  @line_break_pattern ~r{\R}
   @blank_line_pattern ~r{\R\R}
   @network_pattern ~r{(?<current>\w+) = \((?<left>\w+), (?<right>\w+)\)}
   @single_start "AAA"
@@ -17,7 +17,7 @@ defmodule Day8 do
 
   def parse_network(lines) do
     lines
-    |> String.split(@linke_break_pattern)
+    |> String.split(@line_break_pattern)
     |> Enum.map(&parse_network_line/1)
     |> Map.new()
   end
@@ -48,13 +48,15 @@ defmodule Day8 do
     def new(start) do
       %WalkStep{
         current: start,
-        seen: MapSet.new(),
+        seen: Map.new(),
         step_count: 0
       }
     end
 
-    def cycle_length(%WalkStep{seen: seen, step_count: step_count}) do
-      Enum.count(seen) - step_count
+    def cycle_length(%WalkStep{current: current, seen: seen, step_count: step_count}) do
+      cycle_start = Map.get(seen, {step_count, current})
+
+      {Enum.count(seen) - cycle_start, cycle_start}
     end
 
     def walk_with_counter(
@@ -64,13 +66,13 @@ defmodule Day8 do
         ) do
       %WalkStep{
         current: Day8.walk(network, dir, current),
-        seen: MapSet.put(seen, {dir_index, current}),
+        seen: Map.put(seen, {dir_index, current}, steps),
         step_count: min(dir_index, steps) + 1
       }
     end
 
     def contains_cycle?(%WalkStep{current: c, seen: s, step_count: n}) do
-      MapSet.member?(s, {n, c})
+      Map.has_key?(s, {n, c})
     end
   end
 
@@ -113,6 +115,8 @@ defmodule Day8 do
 
     find_start_nodes(network, @start_suffix)
     |> Enum.map(&cycle_length(network, directions, &1))
+    |> IO.inspect
+    |> Enum.map(&elem(&1, 0))
     |> Enum.reduce(1, &lcm/2)
   end
 end
