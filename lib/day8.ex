@@ -115,7 +115,6 @@ defmodule Day8 do
 
     find_start_nodes(network, @start_suffix)
     |> Enum.map(&cycle_length(network, directions, &1))
-    |> IO.inspect
     |> Enum.map(&elem(&1, 0))
     |> Enum.reduce(1, &lcm/2)
   end
