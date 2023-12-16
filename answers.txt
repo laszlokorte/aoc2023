@@ -148,3 +148,13 @@ Part 2 Test:
 145
 Part 2 Prod:
 294474
+
+## Day 16 ##
+Part 1 Test:
+46
+Part 1 Prod:
+7060
+Part 2 Test:
+51
+Part 2 Prod:
+7493
