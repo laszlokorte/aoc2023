@@ -119,23 +119,24 @@ defmodule Day17 do
     end
   end
 
-  def part1(input) do
+  def find_shortest(grid, {min_steps, max_steps}, start) do
     queue = :gb_sets.new()
-    queue = :gb_sets.insert({0, {nil, @min_straight_moves_part1}, @start_pos}, queue)
+    queue = :gb_sets.insert({0, {nil, min_steps}, start}, queue)
 
-    input
-    |> parse
-    |> bfs({@min_straight_moves_part1, @max_straight_moves_part1}, queue, Map.new(), [])
+    grid
+    |> bfs({min_steps, max_steps}, queue, Map.new(), [])
     |> Enum.min()
   end
 
-  def part2(input) do
-    queue = :gb_sets.new()
-    queue = :gb_sets.insert({0, {nil, @min_straight_moves_part2}, @start_pos}, queue)
-
+  def part1(input) do
     input
     |> parse
-    |> bfs({@min_straight_moves_part2, @max_straight_moves_part2}, queue, Map.new(), [])
-    |> Enum.min()
+    |> find_shortest({@min_straight_moves_part1, @max_straight_moves_part1}, @start_pos)
+  end
+
+  def part2(input) do
+    input
+    |> parse
+    |> find_shortest({@min_straight_moves_part2, @max_straight_moves_part2}, @start_pos)
   end
 end
