@@ -3,8 +3,8 @@ defmodule Day17 do
 
   @line_break_pattern ~r{\R}
   @start_pos {0, 0}
-  @min_straight_moves_part1 0
-  @max_straight_moves_part1 2
+  @min_straight_moves_part1 1
+  @max_straight_moves_part1 3
   @min_straight_moves_part2 4
   @max_straight_moves_part2 10
   @dirs [
