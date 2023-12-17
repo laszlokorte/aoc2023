@@ -91,33 +91,31 @@ defmodule Day17 do
   end
 
   def bfs({grid, goal}, step_constraints, queue, seen, results) do
-    case :gb_sets.is_empty(queue) do
-      true ->
-        results
+    if :gb_sets.is_empty(queue) do
+      results
+    else
+      {current, new_queue} = :gb_sets.take_smallest(queue)
 
-      false ->
-        {current, new_queue} = :gb_sets.take_smallest(queue)
+      children = bfs_next_children(grid, step_constraints, current, seen)
 
-        children = bfs_next_children(grid, step_constraints, current, seen)
+      new_seen =
+        Enum.reduce(children, seen, fn
+          {new_loss, {dir, new_counter}, new_pos}, old_seen ->
+            Map.put(old_seen, {dir, new_counter, new_pos}, new_loss)
+        end)
 
-        new_seen =
-          Enum.reduce(children, seen, fn
-            {new_loss, {dir, new_counter}, new_pos}, old_seen ->
-              Map.put(old_seen, {dir, new_counter, new_pos}, new_loss)
-          end)
+      new_queue =
+        Enum.reduce(children, new_queue, fn child, queue ->
+          :gb_sets.insert(child, queue)
+        end)
 
-        new_queue =
-          Enum.reduce(children, new_queue, fn child, queue ->
-            :gb_sets.insert(child, queue)
-          end)
-
-        bfs(
-          {grid, goal},
-          step_constraints,
-          new_queue,
-          new_seen,
-          bfs_collect_current_result(step_constraints, current, goal, results)
-        )
+      bfs(
+        {grid, goal},
+        step_constraints,
+        new_queue,
+        new_seen,
+        bfs_collect_current_result(step_constraints, current, goal, results)
+      )
     end
   end
 
