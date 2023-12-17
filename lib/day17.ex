@@ -91,13 +91,13 @@ defmodule Day17 do
   end
 
   def bfs({grid, goal}, step_constraints, queue, seen, results) do
-    {queue_top, new_queue} = :queue.out(queue)
-
-    case queue_top do
-      :empty ->
+    case :gb_sets.is_empty(queue) do
+      true ->
         results
 
-      {:value, current} ->
+      false ->
+        {current, new_queue} = :gb_sets.take_smallest(queue)
+
         children = bfs_next_children(grid, step_constraints, current, seen)
 
         new_seen =
@@ -108,7 +108,7 @@ defmodule Day17 do
 
         new_queue =
           Enum.reduce(children, new_queue, fn child, queue ->
-            :queue.in(child, queue)
+            :gb_sets.insert(child, queue)
           end)
 
         bfs(
@@ -122,8 +122,8 @@ defmodule Day17 do
   end
 
   def part1(input) do
-    queue = :queue.new()
-    queue = :queue.in({0, {nil, @min_straight_moves_part1}, @start_pos}, queue)
+    queue = :gb_sets.new()
+    queue = :gb_sets.insert({0, {nil, @min_straight_moves_part1}, @start_pos}, queue)
 
     input
     |> parse
@@ -132,8 +132,8 @@ defmodule Day17 do
   end
 
   def part2(input) do
-    queue = :queue.new()
-    queue = :queue.in({0, {nil, @min_straight_moves_part2}, @start_pos}, queue)
+    queue = :gb_sets.new()
+    queue = :gb_sets.insert({0, {nil, @min_straight_moves_part2}, @start_pos}, queue)
 
     input
     |> parse
