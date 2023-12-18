@@ -75,7 +75,7 @@ defmodule Day3 do
     |> Enum.map(fn l -> @spacer <> l <> @spacer end)
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> Day3.split_pad(2)
     |> Enum.chunk_every(3, 1, :discard)
@@ -84,7 +84,7 @@ defmodule Day3 do
     |> Enum.sum()
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> Day3.split_pad(2)
     |> Enum.chunk_every(5, 1, :discard)

@@ -15,7 +15,7 @@ defmodule Day6 do
     String.to_integer(num)
   end
 
-  def part1(input) do
+  def part(1, input) do
     [timeline, distanceline] = String.split(input, ~r{\R}, limit: 1, trim: true)
     times = @digits |> Regex.scan(timeline) |> Enum.map(&single_int/1)
     distances = @digits |> Regex.scan(distanceline) |> Enum.map(&single_int/1)
@@ -26,7 +26,7 @@ defmodule Day6 do
     |> Enum.reduce(1, &(&1 * &2))
   end
 
-  def part2(input) do
-    part1(String.replace(input, " ", ""))
+  def part(2, input) do
+    part(1, String.replace(input, " ", ""))
   end
 end

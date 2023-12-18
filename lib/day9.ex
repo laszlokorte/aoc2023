@@ -31,11 +31,11 @@ defmodule Day9 do
     |> Enum.sum()
   end
 
-  def part1(input) do
+  def part(1, input) do
     input |> sum_predicted(&predict_next/1)
   end
 
-  def part2(input) do
+  def part(2, input) do
     input |> sum_predicted(&predict_prev/1)
   end
 end

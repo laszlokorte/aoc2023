@@ -109,13 +109,13 @@ defmodule Day16 do
     |> Enum.concat(Enum.map(0..w, &{{w + 1, &1}, :left}))
   end
 
-  def part1(input) do
+  def part(1, input) do
     landscape = parse(input)
 
     stable_energy(@initial_ray, landscape)
   end
 
-  def part2(input) do
+  def part(2, input) do
     landscape = {_, w, h} = parse(input)
 
     initial_positions(w, h)

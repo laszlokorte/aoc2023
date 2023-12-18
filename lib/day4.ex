@@ -37,7 +37,7 @@ defmodule Day4 do
     |> elem(0)
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day4.count_matches/1)
@@ -45,7 +45,7 @@ defmodule Day4 do
     |> Enum.sum()
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day4.count_matches/1)

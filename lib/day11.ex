@@ -71,11 +71,11 @@ defmodule Day11 do
     |> Integer.floor_div(2)
   end
 
-  def part1(input) do
+  def part(1, input) do
     galaxy_distances_sum(input, 2)
   end
 
-  def part2(input) do
+  def part(2, input) do
     galaxy_distances_sum(input, 1_000_000)
   end
 end

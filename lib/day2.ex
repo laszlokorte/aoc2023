@@ -47,7 +47,7 @@ defmodule Day2 do
     Map.values(cubes) |> Enum.reduce(1, &(&1 * &2))
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day2.parse_game/1)
@@ -56,7 +56,7 @@ defmodule Day2 do
     |> Enum.sum()
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day2.parse_game/1)

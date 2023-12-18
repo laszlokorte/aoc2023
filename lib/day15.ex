@@ -43,14 +43,14 @@ defmodule Day15 do
     |> Enum.sum()
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> String.split(",")
     |> Enum.map(&hash/1)
     |> Enum.sum()
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> String.split(",")
     |> Enum.map(&parse_operation/1)

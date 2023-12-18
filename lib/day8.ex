@@ -104,13 +104,13 @@ defmodule Day8 do
   def gcd(x, 0), do: x
   def gcd(x, y), do: gcd(y, rem(x, y))
 
-  def part1(input) do
+  def part(1, input) do
     {directions, network} = parse_input(input)
 
     steps_to_goal(network, directions, @single_start, @goal_suffix)
   end
 
-  def part2(input) do
+  def part(2, input) do
     {directions, network} = parse_input(input)
 
     find_start_nodes(network, @start_suffix)

@@ -66,11 +66,11 @@ defmodule Day7 do
     |> Enum.sum()
   end
 
-  def part1(input) do
+  def part(1, input) do
     calculate_hands(input, @cards_part1, @jokers_part1)
   end
 
-  def part2(input) do
+  def part(2, input) do
     calculate_hands(input, @cards_part2, @jokers_part2)
   end
 end

@@ -33,7 +33,7 @@ defmodule Day1 do
     Enum.map(digits, &single_digit_to_int(&1, fallback_words))
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part1pattern))
@@ -43,7 +43,7 @@ defmodule Day1 do
     |> Enum.sum()
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> String.split(~r{\R}, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part2pattern))

@@ -56,11 +56,11 @@ defmodule Day13 do
     |> Enum.sum()
   end
 
-  def part1(input) do
+  def part(1, input) do
     solve(input, 0)
   end
 
-  def part2(input) do
+  def part(2, input) do
     solve(input, 1)
   end
 end

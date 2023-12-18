@@ -102,7 +102,7 @@ defmodule Day5 do
     )
   end
 
-  def part1(input) do
+  def part(1, input) do
     [seed_line, mapping_lines] = parse_parts(input)
 
     seeds = parse_seeds_singlton(seed_line)
@@ -115,7 +115,7 @@ defmodule Day5 do
     |> Enum.min()
   end
 
-  def part2(input) do
+  def part(2, input) do
     [seed_line, mapping_lines] = parse_parts(input)
 
     seeds = parse_seed_range(seed_line)

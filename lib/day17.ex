@@ -128,13 +128,13 @@ defmodule Day17 do
     |> Enum.min()
   end
 
-  def part1(input) do
+  def part(1, input) do
     input
     |> parse
     |> find_shortest({@min_straight_moves_part1, @max_straight_moves_part1}, @start_pos)
   end
 
-  def part2(input) do
+  def part(2, input) do
     input
     |> parse
     |> find_shortest({@min_straight_moves_part2, @max_straight_moves_part2}, @start_pos)
