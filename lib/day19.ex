@@ -2,28 +2,39 @@ defmodule Day19 do
   use AOC, day: 19
 
   @empty_line_pattern ~r{\R\R}
+  @line_break_pattern ~r{\R}
   @workflow_pattern ~r"(?<name>\w+)\{(?<rules>[^}]+)\}"
   @rule_pattern ~r"(?:(?<field>\w+)(?<comp>[<>])(?<val>\d+):)?(?<target>\w+)"
-  @part_pattern ~r"\{(?<values>[^}]+)\}"
   @comma ","
   @eq "="
   @workflow_start "in"
   @accepted "A"
   @rejected "R"
-  @max_part_range [x: 1..4000, m: 1..4000, a: 1..4000, s: 1..4000]
+  @max_cat_range 1..4000
+  @max_range_part [x: @max_cat_range, m: @max_cat_range, a: @max_cat_range, s: @max_cat_range]
 
   def parse_category("x"), do: :x
   def parse_category("m"), do: :m
   def parse_category("a"), do: :a
   def parse_category("s"), do: :s
 
+  def parse_op("<"), do: :<
+  def parse_op(">"), do: :>
+
+  def parse_workflow_name(@accepted), do: true
+  def parse_workflow_name(@rejected), do: false
+  def parse_workflow_name(n), do: n
+
   def parse_rule(rule) do
     @rule_pattern
     |> Regex.run(rule, capture: [:field, :comp, :val, :target])
     |> case do
-      ["", "", "", default] -> {:default, default}
-      [field, "<", val, default] -> {{parse_category(field), :<, String.to_integer(val)}, default}
-      [field, ">", val, default] -> {{parse_category(field), :>, String.to_integer(val)}, default}
+      ["", "", "", default] ->
+        {:default, parse_workflow_name(default)}
+
+      [field, op, val, target] ->
+        {{parse_category(field), parse_op(op), String.to_integer(val)},
+         parse_workflow_name(target)}
     end
   end
 
@@ -31,7 +42,7 @@ defmodule Day19 do
     {name, rules |> String.split(@comma) |> Enum.map(&parse_rule/1)}
   end
 
-  def parse_parts([part]) do
+  def parse_parts(part) do
     part
     |> String.split(@comma)
     |> Enum.map(&String.split(&1, @eq, parts: 2))
@@ -50,8 +61,10 @@ defmodule Day19 do
       |> Enum.into(Map.new())
 
     parts =
-      @part_pattern
-      |> Regex.scan(parts, capture: [:values])
+      parts
+      |> String.split(@line_break_pattern)
+      |> Enum.map(&String.trim_leading(&1, "{"))
+      |> Enum.map(&String.trim_trailing(&1, "}"))
       |> Enum.map(&parse_parts/1)
 
     {workflows, parts}
@@ -69,88 +82,76 @@ defmodule Day19 do
 
   def process_single_part(part, workflows) do
     Stream.iterate(@workflow_start, fn
-      @rejected -> @rejected
-      @accepted -> @accepted
+      r when is_boolean(r) -> r
       wf -> process_single_part_step(part, Map.get(workflows, wf))
     end)
     |> Enum.find(fn
-      @rejected -> true
-      @accepted -> true
-      _ -> false
+      x -> is_boolean(x)
     end)
   end
 
-  def sum_part_categories(part) do
-    Enum.sum(for {_, v} <- part, do: v)
-  end
-
-  def split_range_part(range_part, parts_field, comp_op, comp_val) do
-    min..max = Keyword.get(range_part, parts_field)
+  def split_range(range, comp_op, comp_val) do
+    min..max = range
 
     case {comp_op, max < comp_val, min > comp_val} do
-      {:<, true, false} ->
-        {range_part, nil}
-
-      {:<, false, true} ->
-        {nil, range_part}
-
-      {:<, _, _} ->
-        {
-          Keyword.put(range_part, parts_field, min..(comp_val - 1)),
-          Keyword.put(range_part, parts_field, comp_val..max)
-        }
-
-      {:>, true, false} ->
-        {nil, range_part}
-
-      {:>, false, true} ->
-        {range_part, nil}
-
-      {:>, _, _} ->
-        {
-          Keyword.put(range_part, parts_field, (comp_val + 1)..max),
-          Keyword.put(range_part, parts_field, min..comp_val)
-        }
+      {:<, true, false} -> {range, nil}
+      {:<, false, true} -> {nil, range}
+      {:<, _, _} -> {min..(comp_val - 1), comp_val..max}
+      {:>, true, false} -> {nil, range}
+      {:>, false, true} -> {range, nil}
+      {:>, _, _} -> {(comp_val + 1)..max, min..comp_val}
     end
   end
 
-  def process_range_step(range_part, workflow) do
+  def split_range_part(range_part, parts_field, comp_op, comp_val) do
+    Keyword.get(range_part, parts_field)
+    |> split_range(comp_op, comp_val)
+    |> case do
+      {nil, nil} -> {nil, nil}
+      {nil, a} -> {nil, Keyword.put(range_part, parts_field, a)}
+      {a, nil} -> {Keyword.put(range_part, parts_field, a), nil}
+      {a, b} -> {Keyword.put(range_part, parts_field, a), Keyword.put(range_part, parts_field, b)}
+    end
+  end
+
+  def process_range_part_step(range_part, workflow) do
     workflow
     |> Enum.scan({nil, range_part}, fn
       _, {_, nil} ->
         {nil, nil}
 
-      {:default, r}, {_, p} ->
-        {{r, p}, nil}
+      {:default, matching_workflow}, {_, current_range} ->
+        {{matching_workflow, current_range}, nil}
 
-      {{field, op, comp_val}, r}, {_, p} ->
-        case split_range_part(p, field, op, comp_val) do
-          {nil, b} -> {nil, b}
-          {a, b} -> {{r, a}, b}
+      {{field, op, comp_val}, matching_workflow}, {_, current_range} ->
+        with {matching_range, rem_range} = split_range_part(current_range, field, op, comp_val) do
+          {{matching_workflow, matching_range}, rem_range}
         end
     end)
     |> Enum.map(&elem(&1, 0))
-    |> Enum.filter(fn
-      nil -> false
-      _ -> true
+    |> Enum.filter(&(not is_nil(&1)))
+  end
+
+  def process_range_part_branches(branches, workflows) do
+    branches
+    |> Enum.flat_map(fn
+      {false, _} -> []
+      {true, rem} -> [{true, rem}]
+      {wf, p} -> process_range_part_step(p, Map.get(workflows, wf))
     end)
   end
 
-  def process_range(part, workflows) do
-    Stream.iterate([{@workflow_start, part}], fn
-      [] ->
-        []
+  def process_range_part(range_part, workflows) do
+    Stream.iterate([{@workflow_start, range_part}], &process_range_part_branches(&1, workflows))
+  end
 
-      branches ->
-        Enum.flat_map(branches, fn
-          {@rejected, _} -> []
-          {@accepted, rem} -> [{@accepted, rem}]
-          {wf, p} -> process_range_step(p, Map.get(workflows, wf))
-        end)
-    end)
-    |> Stream.chunk_every(2, 1)
+  def find_branch_leafs(workflow_steps) do
+    workflow_steps
     |> Enum.find_value(fn
-      [a, b] -> if a == b, do: b |> Enum.map(fn {@accepted, range_part} -> range_part end)
+      b ->
+        if Enum.all?(b, &(elem(&1, 0) == true)) do
+          Enum.map(b, fn {true, range_part} -> range_part end)
+        end
     end)
   end
 
@@ -158,20 +159,25 @@ defmodule Day19 do
     range_part |> Enum.map(fn {_, min..max} -> max - min + 1 end) |> Enum.product()
   end
 
+  def sum_single_part_categories(part) do
+    Enum.sum(for {_, v} <- part, do: v)
+  end
+
   def part(1, input) do
     {workflows, parts} = input |> parse
 
     parts
-    |> Enum.filter(&(@accepted == process_single_part(&1, workflows)))
-    |> Enum.map(&sum_part_categories/1)
+    |> Enum.filter(&process_single_part(&1, workflows))
+    |> Enum.map(&sum_single_part_categories/1)
     |> Enum.sum()
   end
 
   def part(2, input) do
     {workflows, _} = input |> parse
 
-    @max_part_range
-    |> process_range(workflows)
+    @max_range_part
+    |> process_range_part(workflows)
+    |> find_branch_leafs
     |> Enum.map(&count_range_part_combinations/1)
     |> Enum.sum()
   end
