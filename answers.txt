@@ -169,11 +169,22 @@ Part 2 Test:
 Part 2 Prod:
 1171
 
-Day 18, Part 1 test:
+## Day 18 ##
+Part 1 test:
 62
-Day 18, Part 1 prod:
+Part 1 prod:
 47527
-Day 18, Part 2 test:
+Part 2 test:
 952408144115
-Day 18, Part 2 prod:
+Part 2 prod:
 52240187443190
+
+## Day 19 ##
+Part 1 test: 
+19114
+Part 1 prod: 
+406849
+Part 2 test: 
+167409079868000
+Part 2 prod: 
+138625360533574
