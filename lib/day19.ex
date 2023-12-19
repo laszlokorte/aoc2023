@@ -88,7 +88,94 @@ defmodule Day19 do
     |> Enum.sum()
   end
 
+  def split_range_part(part, field, :<, comp) do
+    min..max = Keyword.get(part, field)
+
+    cond do
+      max < comp ->
+        {part, nil}
+
+      min > comp ->
+        {nil, part}
+
+      true ->
+        {
+          Keyword.put(part, field, min..(comp - 1)),
+          Keyword.put(part, field, comp..max)
+        }
+    end
+  end
+
+  def split_range_part(part, field, :>, comp) do
+    min..max = Keyword.get(part, field)
+
+    cond do
+      min > comp ->
+        {part, nil}
+
+      max < comp ->
+        {nil, part}
+
+      true ->
+        {
+          Keyword.put(part, field, (comp + 1)..max),
+          Keyword.put(part, field, min..comp)
+        }
+    end
+  end
+
+  def process_step2(range_part, workflow) do
+    workflow
+    |> Enum.scan({nil, range_part}, fn
+      _, {_, nil} ->
+        {nil, nil}
+
+      {:default, r}, {_, p} ->
+        {{r, p}, nil}
+
+      {{field, op, comp}, r}, {_, p} ->
+        case split_range_part(p, field, op, comp) do
+          {nil, b} -> {nil, b}
+          {a, b} -> {{r, a}, b}
+        end
+    end)
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.filter(fn
+      nil -> false
+      _ -> true
+    end)
+  end
+
+  def process2(part, workflows) do
+    Stream.iterate([{"in", part}], fn
+      [] ->
+        []
+
+      branches ->
+        Enum.flat_map(branches, fn
+          {"R", _} -> []
+          {"A", rem} -> [{"A", rem}]
+          {wf, p} -> process_step2(p, Map.get(workflows, wf))
+        end)
+    end)
+    |> Stream.chunk_every(2, 1)
+    |> Enum.find_value(fn
+      [a, b] -> if a == b, do: b
+    end)
+  end
+
+  def count_combinations({"A", part}) do
+    part |> Enum.map(fn {_, min..max} -> max - min + 1 end) |> Enum.product()
+  end
+
   def part(2, input) do
-    input
+    initial_part = [x: 1..4000, m: 1..4000, a: 1..4000, s: 1..4000]
+
+    {workflows, _} = input |> parse
+
+    initial_part
+    |> process2(workflows)
+    |> Enum.map(&count_combinations/1)
+    |> Enum.sum()
   end
 end
