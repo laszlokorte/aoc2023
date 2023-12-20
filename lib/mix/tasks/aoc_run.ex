@@ -53,7 +53,7 @@ defmodule Mix.Tasks.AocRun do
           {part, env, apply(day, :part, [part, input])}
       end,
       ordered: true,
-      timeout: 99999
+      timeout: :infinity
     )
     |> Enum.map(fn {:ok, {part, env, output}} ->
       {day_number, part, env, output}
@@ -71,7 +71,7 @@ defmodule Mix.Tasks.AocRun do
         day -> run_day(AOC.Day.number(struct(day, [])), parts, envs)
       end,
       ordered: true,
-      timeout: 99999
+      timeout: :infinity
     )
     |> Enum.flat_map(fn {:ok, r} -> r end)
   end
