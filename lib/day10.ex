@@ -1,6 +1,7 @@
 defmodule Day10 do
   use AOC, day: 10
   require Integer
+  import Enum
 
   @line_break_pattern ~r{\R}
   @biased_vertical_pipes ["F", "J", "|", "-"]
@@ -50,14 +51,14 @@ defmodule Day10 do
   def parse_pipes(input) do
     input
     |> String.split(@line_break_pattern)
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {line, y} ->
+    |> with_index()
+    |> flat_map(fn {line, y} ->
       line
       |> String.codepoints()
-      |> Enum.with_index()
-      |> Enum.map(fn {pipe, x} -> {{x, y}, pipe} end)
+      |> with_index()
+      |> map(fn {pipe, x} -> {{x, y}, pipe} end)
     end)
-    |> Enum.into(Map.new())
+    |> into(Map.new())
   end
 
   def walk_on(pipe_map, {pos, dir}) do
@@ -68,7 +69,7 @@ defmodule Day10 do
 
   def find_start(pipe_map) do
     pipe_map
-    |> Enum.find(&(elem(&1, 1) == "S"))
+    |> find(&(elem(&1, 1) == "S"))
     |> elem(0)
   end
 
@@ -77,20 +78,20 @@ defmodule Day10 do
     |> Stream.iterate(&walk_on(pipe_map, &1))
     |> Stream.take_while(fn {_, d} -> d != nil end)
     |> Stream.take_while(fn {pos, _} -> pos != start_pos end)
-    |> Enum.concat([{start_pos, dir}])
+    |> concat([{start_pos, dir}])
   end
 
   def longest_loop(pipe_map) do
     start_pos = find_start(pipe_map)
 
     [:up, :right, :left, :down]
-    |> Enum.map(&follow_pipe_from(pipe_map, start_pos, &1))
-    |> Enum.max_by(&Enum.count/1)
+    |> map(&follow_pipe_from(pipe_map, start_pos, &1))
+    |> max_by(&count/1)
   end
 
   def fillin_start(pipe_map, loop) do
-    {_, first_direction} = Enum.at(loop, 0)
-    {_, last_direction} = Enum.at(loop, -2)
+    {_, first_direction} = at(loop, 0)
+    {_, last_direction} = at(loop, -2)
 
     start_piece = bending_piece(last_direction, first_direction)
 
@@ -113,21 +114,21 @@ defmodule Day10 do
 
   def grid_size(pipe_map) do
     pipe_map
-    |> Enum.max_by(fn {{x, y}, _} -> x * y end)
+    |> max_by(fn {{x, y}, _} -> x * y end)
     |> elem(0)
   end
 
   def ray_count_hits(pipe_map, used_positions, ray) do
     ray
-    |> Enum.filter(&MapSet.member?(used_positions, &1))
-    |> Enum.map(&pipe_map[&1])
-    |> Enum.count(&(&1 in @biased_vertical_pipes))
+    |> filter(&MapSet.member?(used_positions, &1))
+    |> map(&pipe_map[&1])
+    |> count(&(&1 in @biased_vertical_pipes))
   end
 
   def part(1, input) do
     parse_pipes(input)
     |> longest_loop
-    |> Enum.count()
+    |> count()
     |> Integer.floor_div(2)
   end
 
@@ -138,8 +139,8 @@ defmodule Day10 do
 
     used_positions =
       loop
-      |> Enum.map(fn {p, _} -> p end)
-      |> Enum.into(MapSet.new())
+      |> map(fn {p, _} -> p end)
+      |> into(MapSet.new())
 
     {maxx, maxy} = size = grid_size(pipe_map)
 
@@ -147,7 +148,7 @@ defmodule Day10 do
       for x <- 0..maxx, y <- 0..maxy, not MapSet.member?(used_positions, {x, y}), do: {x, y}
 
     test_candiates
-    |> Enum.count(fn {x, y} ->
+    |> count(fn {x, y} ->
       cast_grid_ray({x, y}, @ray_direction, size)
       |> then(&ray_count_hits(pipe_map, used_positions, &1))
       |> Integer.is_odd()
@@ -169,8 +170,8 @@ defmodule Day10 do
 
     used_positions =
       loop
-      |> Enum.map(fn {p, _} -> p end)
-      |> Enum.into(MapSet.new())
+      |> map(fn {p, _} -> p end)
+      |> into(MapSet.new())
 
     {maxx, maxy} = size = grid_size(pipe_map)
 

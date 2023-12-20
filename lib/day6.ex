@@ -1,6 +1,8 @@
 defmodule Day6 do
   use AOC, day: 6
 
+  import Enum
+
   @digits ~r{\d+}
   @line_break_pattern ~r{\R}
 
@@ -18,13 +20,13 @@ defmodule Day6 do
 
   def part(1, input) do
     [timeline, distanceline] = String.split(input, @line_break_pattern, limit: 1, trim: true)
-    times = @digits |> Regex.scan(timeline) |> Enum.map(&single_int/1)
-    distances = @digits |> Regex.scan(distanceline) |> Enum.map(&single_int/1)
+    times = @digits |> Regex.scan(timeline) |> map(&single_int/1)
+    distances = @digits |> Regex.scan(distanceline) |> map(&single_int/1)
 
     times
-    |> Enum.zip_with(distances, &pq_zeros/2)
-    |> Enum.map(&integers_between/1)
-    |> Enum.reduce(1, &(&1 * &2))
+    |> zip_with(distances, &pq_zeros/2)
+    |> map(&integers_between/1)
+    |> reduce(1, &(&1 * &2))
   end
 
   def part(2, input) do

@@ -1,6 +1,8 @@
 defmodule Day14 do
   use AOC, day: 14
 
+  import Enum
+
   @part2_seq [:up, :left, :down, :right]
   @part2_cycle_count 1_000_000_000
 
@@ -65,32 +67,32 @@ defmodule Day14 do
 
     def tilt(stone_map, direction) do
       tilt_order(stone_map, direction)
-      |> Enum.reduce(stone_map, &move_element(&1, &2, direction))
+      |> reduce(stone_map, &move_element(&1, &2, direction))
     end
 
     def parse(input) do
       lines = input |> String.split(@line_break_pattern, trim: true)
-      height = Enum.count(lines)
-      width = String.length(Enum.at(lines, 0))
+      height = count(lines)
+      width = String.length(at(lines, 0))
 
       lines
-      |> Enum.with_index()
-      |> Enum.flat_map(fn {line, y} ->
+      |> with_index()
+      |> flat_map(fn {line, y} ->
         line
         |> String.codepoints()
-        |> Enum.with_index()
-        |> Enum.map(fn
+        |> with_index()
+        |> map(fn
           {@round_piece, x} -> {:round, x, y}
           {@cube_piece, x} -> {:cube, x, y}
           {@empty_piece, x} -> {:empty, x, y}
         end)
       end)
-      |> Enum.filter(fn
+      |> filter(fn
         {:round, _, _} -> true
         {:cube, _, _} -> true
         {:empty, _, _} -> false
       end)
-      |> Enum.into(Map.new(), fn {kind, x, y} -> {{x, y}, kind} end)
+      |> into(Map.new(), fn {kind, x, y} -> {{x, y}, kind} end)
       |> StoneMap.new(width, height)
     end
 
@@ -107,9 +109,9 @@ defmodule Day14 do
       end)
       |> Stream.drop_while(fn {_, _, cycle} -> nil == cycle end)
       |> Stream.map(fn {last_map, seen, cycle_start} ->
-        {last_map, Enum.count(seen) - cycle_start, cycle_start}
+        {last_map, count(seen) - cycle_start, cycle_start}
       end)
-      |> Enum.at(0)
+      |> at(0)
     end
 
     def print_map({w, h, map}) do
@@ -128,11 +130,11 @@ defmodule Day14 do
 
     def weight(%StoneMap{height: height, pieces: pieces}) do
       pieces
-      |> Enum.map(fn
+      |> map(fn
         {{_, y}, :round} -> height - y
         _ -> 0
       end)
-      |> Enum.sum()
+      |> sum()
     end
   end
 
@@ -145,14 +147,14 @@ defmodule Day14 do
   def part(2, input) do
     map = StoneMap.parse(input)
 
-    total_tilts = @part2_cycle_count * Enum.count(@part2_seq)
+    total_tilts = @part2_cycle_count * count(@part2_seq)
     {cycle, cycle_length, cycle_start} = StoneMap.find_cycle(map, @part2_seq)
     cycle_rest = rem(total_tilts - cycle_start, cycle_length)
 
     Stream.cycle(@part2_seq)
     |> Stream.drop(cycle_start)
     |> Stream.take(cycle_rest)
-    |> Enum.reduce(cycle, &StoneMap.tilt(&2, &1))
+    |> reduce(cycle, &StoneMap.tilt(&2, &1))
     |> StoneMap.weight()
   end
 end

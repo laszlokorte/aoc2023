@@ -1,6 +1,8 @@
 defmodule Day11 do
   use AOC, day: 11
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @galaxy_symbol "#"
   @emptiness_symbol "."
@@ -8,19 +10,19 @@ defmodule Day11 do
   def find_galaxies(input) do
     input
     |> String.split(@line_break_pattern)
-    |> Enum.map(&String.codepoints/1)
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {lines, y} ->
+    |> map(&String.codepoints/1)
+    |> with_index()
+    |> flat_map(fn {lines, y} ->
       lines
-      |> Enum.with_index()
-      |> Enum.filter(&(elem(&1, 0) == @galaxy_symbol))
-      |> Enum.map(fn {_, x} -> {x, y} end)
+      |> with_index()
+      |> filter(&(elem(&1, 0) == @galaxy_symbol))
+      |> map(fn {_, x} -> {x, y} end)
     end)
-    |> Enum.into(MapSet.new())
+    |> into(MapSet.new())
   end
 
   def all_chars_same({chars, _}, char) do
-    chars |> Enum.all?(&(&1 == char))
+    chars |> all?(&(&1 == char))
   end
 
   def find_emptyness(input) do
@@ -28,30 +30,30 @@ defmodule Day11 do
 
     empty_rows =
       lines
-      |> Enum.map(&String.codepoints/1)
-      |> Enum.with_index()
-      |> Enum.filter(&all_chars_same(&1, @emptiness_symbol))
-      |> Enum.map(&elem(&1, 1))
+      |> map(&String.codepoints/1)
+      |> with_index()
+      |> filter(&all_chars_same(&1, @emptiness_symbol))
+      |> map(&elem(&1, 1))
 
     empty_columns =
       lines
-      |> Enum.map(&String.codepoints/1)
-      |> Enum.zip()
-      |> Enum.map(&Tuple.to_list/1)
-      |> Enum.with_index()
-      |> Enum.filter(&all_chars_same(&1, @emptiness_symbol))
-      |> Enum.map(&elem(&1, 1))
+      |> map(&String.codepoints/1)
+      |> zip()
+      |> map(&Tuple.to_list/1)
+      |> with_index()
+      |> filter(&all_chars_same(&1, @emptiness_symbol))
+      |> map(&elem(&1, 1))
 
     {empty_rows, empty_columns}
   end
 
   def adjust_spacing(galaxies, {empty_rows, empty_cols}, expansion_factor \\ 1) do
     galaxies
-    |> Enum.map(fn
+    |> map(fn
       {x, y} ->
         {
-          x + (expansion_factor - 1) * Enum.count(empty_cols, &(&1 < x)),
-          y + (expansion_factor - 1) * Enum.count(empty_rows, &(&1 < y))
+          x + (expansion_factor - 1) * count(empty_cols, &(&1 < x)),
+          y + (expansion_factor - 1) * count(empty_rows, &(&1 < y))
         }
     end)
   end
@@ -65,9 +67,9 @@ defmodule Day11 do
     galaxy_pairs = for a <- actual_galaxies, b <- actual_galaxies, do: {a, b}
 
     galaxy_pairs
-    |> Enum.map(fn {{xa, ya}, {xb, yb}} -> {xb - xa, ya - yb} end)
-    |> Enum.map(fn {dx, dy} -> abs(dx) + abs(dy) end)
-    |> Enum.sum()
+    |> map(fn {{xa, ya}, {xb, yb}} -> {xb - xa, ya - yb} end)
+    |> map(fn {dx, dy} -> abs(dx) + abs(dy) end)
+    |> sum()
     |> Integer.floor_div(2)
   end
 

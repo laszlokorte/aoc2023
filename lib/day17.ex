@@ -1,6 +1,8 @@
 defmodule Day17 do
   use AOC, day: 17
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @start_pos {0, 0}
   @min_straight_moves_part1 1
@@ -21,55 +23,57 @@ defmodule Day17 do
     grid =
       input
       |> String.split(@line_break_pattern)
-      |> Enum.with_index()
-      |> Enum.flat_map(fn
+      |> with_index()
+      |> flat_map(fn
         {line, y} ->
           line
           |> String.codepoints()
-          |> Enum.with_index()
-          |> Enum.map(fn
+          |> with_index()
+          |> map(fn
             {char, x} -> {{x, y}, String.to_integer(char)}
           end)
       end)
-      |> Enum.into(Map.new())
+      |> into(Map.new())
 
-    goal = grid |> Map.keys() |> Enum.max_by(fn {x, y} -> x * y end)
+    goal = grid |> Map.keys() |> max_by(fn {x, y} -> x * y end)
 
     {grid, goal}
   end
 
   def bfs_next_children(grid, {min_steps, max_steps}, {loss, {dir, counter}, current_pos}, seen) do
+    alias Stream, as: S
+
     @dirs
-    |> Stream.filter(fn
+    |> S.filter(fn
       # dont allow walking backwards
       d -> opposite(d) != dir
     end)
-    |> Stream.filter(fn
+    |> S.filter(fn
       # dont allow the same direction too often in a row
       ^dir -> counter < max_steps
       # dont allow switching deirections too often
       _ -> counter >= min_steps
     end)
-    |> Stream.map(fn
+    |> S.map(fn
       # increment number of same direction
       ^dir -> {dir, step(current_pos, dir), counter + 1}
       # reset same direction counter to 1
       d -> {d, step(current_pos, d), 1}
     end)
-    |> Stream.map(fn
+    |> S.map(fn
       # determine step cost 
       {dir, new_pos, counter} -> {dir, new_pos, counter, Map.get(grid, new_pos)}
     end)
-    |> Stream.filter(fn
+    |> S.filter(fn
       # discard nil costs, ie. steps outside the grid
       {_, _, _, nil} -> false
       _ -> true
     end)
-    |> Stream.map(fn
+    |> S.map(fn
       # calculate new total cost
       {dir, new_pos, new_counter, add_loss} -> {loss + add_loss, {dir, new_counter}, new_pos}
     end)
-    |> Enum.filter(fn
+    |> S.filter(fn
       # discard all steps onto positions for which a lower cost has already been found
       {new_loss, {dir, new_counter}, new_pos} ->
         case Map.get(seen, {dir, new_counter, new_pos}) do
@@ -99,13 +103,13 @@ defmodule Day17 do
       children = bfs_next_children(grid, step_constraints, current, seen)
 
       new_seen =
-        Enum.reduce(children, seen, fn
+        reduce(children, seen, fn
           {new_loss, {dir, new_counter}, new_pos}, old_seen ->
             Map.put(old_seen, {dir, new_counter, new_pos}, new_loss)
         end)
 
       new_queue =
-        Enum.reduce(children, new_queue, fn child, queue ->
+        reduce(children, new_queue, fn child, queue ->
           :gb_sets.insert(child, queue)
         end)
 
@@ -125,7 +129,7 @@ defmodule Day17 do
 
     grid
     |> bfs({min_steps, max_steps}, queue, Map.new(), [])
-    |> Enum.min()
+    |> min()
   end
 
   def part(1, input) do

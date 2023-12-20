@@ -1,10 +1,12 @@
 defmodule Day15 do
   use AOC, day: 15
 
+  import Enum
+
   @box_count 256
   @hash_mod 17
   @op_pattern ~r{(?<lense>\w+)(?:=(?<focal>\d)|(?<sub>-))}
-  @boxes 0..(@box_count - 1) |> Enum.into(Map.new(), fn i -> {i, []} end)
+  @boxes 0..(@box_count - 1) |> into(Map.new(), fn i -> {i, []} end)
   @sub "-"
 
   def hash(<<>>, acc), do: acc
@@ -33,24 +35,24 @@ defmodule Day15 do
 
   def focusing_power({box, lenses}) do
     lenses
-    |> Enum.with_index(1)
-    |> Enum.map(fn {{_, focal}, i} -> (box + 1) * i * focal end)
-    |> Enum.sum()
+    |> with_index(1)
+    |> map(fn {{_, focal}, i} -> (box + 1) * i * focal end)
+    |> sum()
   end
 
   def part(1, input) do
     input
     |> String.split(",")
-    |> Enum.map(&hash/1)
-    |> Enum.sum()
+    |> map(&hash/1)
+    |> sum()
   end
 
   def part(2, input) do
     input
     |> String.split(",")
-    |> Enum.map(&parse_operation/1)
-    |> Enum.reduce(@boxes, &apply_operation/2)
-    |> Enum.map(&focusing_power/1)
-    |> Enum.sum()
+    |> map(&parse_operation/1)
+    |> reduce(@boxes, &apply_operation/2)
+    |> map(&focusing_power/1)
+    |> sum()
   end
 end

@@ -1,6 +1,8 @@
 defmodule Day7 do
   use AOC, day: 7
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @cards_part1 ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
   @cards_part2 ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
@@ -8,7 +10,7 @@ defmodule Day7 do
   @jokers_part2 MapSet.new(["J"])
 
   def card_rank(card, card_order) do
-    Enum.find_index(card_order, &(&1 == card))
+    find_index(card_order, &(&1 == card))
   end
 
   def hand_rank_sorted([c, c, c, c, c]), do: 0
@@ -20,13 +22,13 @@ defmodule Day7 do
   def hand_rank_sorted([_, _, _, _, _]), do: 6
 
   def apply_joker(original, joker) do
-    without_jokers = original |> Enum.filter(&(&1 not in joker))
-    missing = Enum.count(original) - Enum.count(without_jokers)
+    without_jokers = original |> filter(&(&1 not in joker))
+    missing = count(original) - count(without_jokers)
 
     without_jokers
     |> List.first(List.first(original))
     |> List.duplicate(missing)
-    |> Enum.concat(without_jokers)
+    |> concat(without_jokers)
   end
 
   def hand_bid_rank({_bid, hand}, card_order, joker) do
@@ -36,15 +38,15 @@ defmodule Day7 do
   def hand_rank(hand, card_order, joker) do
     kind_rank =
       hand
-      |> Enum.sort_by(&card_rank(&1, card_order))
-      |> Enum.chunk_by(& &1)
-      |> Enum.sort_by(&Enum.count/1)
-      |> Enum.reverse()
+      |> sort_by(&card_rank(&1, card_order))
+      |> chunk_by(& &1)
+      |> sort_by(&count/1)
+      |> reverse()
       |> List.flatten()
       |> apply_joker(joker)
       |> hand_rank_sorted
 
-    card_ranks = hand |> Enum.map(&card_rank(&1, card_order))
+    card_ranks = hand |> map(&card_rank(&1, card_order))
 
     [kind_rank | card_ranks]
   end
@@ -58,13 +60,13 @@ defmodule Day7 do
   def calculate_hands(input, card_order, joker) do
     input
     |> String.split(@line_break_pattern, trim: true)
-    |> Enum.map(&parse_hand(&1))
-    |> Enum.sort_by(&hand_bid_rank(&1, card_order, joker))
-    |> Enum.map(&elem(&1, 0))
-    |> Enum.reverse()
-    |> Enum.with_index(1)
-    |> Enum.map(&Tuple.product/1)
-    |> Enum.sum()
+    |> map(&parse_hand(&1))
+    |> sort_by(&hand_bid_rank(&1, card_order, joker))
+    |> map(&elem(&1, 0))
+    |> reverse()
+    |> with_index(1)
+    |> map(&Tuple.product/1)
+    |> sum()
   end
 
   def part(1, input) do

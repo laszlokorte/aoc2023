@@ -2,6 +2,7 @@ defmodule Day12 do
   use AOC, day: 12
 
   use Memoize
+  import Enum
 
   @line_break_pattern ~r{\R}
   @comma ","
@@ -19,15 +20,15 @@ defmodule Day12 do
     springs =
       pattern
       |> List.duplicate(multiplier)
-      |> Enum.join(@space_between_reps)
+      |> join(@space_between_reps)
 
     damage_counts =
       counts
       |> List.duplicate(multiplier)
-      |> Enum.join(@comma)
+      |> join(@comma)
       |> String.split(@comma)
-      |> Enum.map(&String.to_integer/1)
-      |> Enum.into(<<>>, fn num -> <<num::8>> end)
+      |> map(&String.to_integer/1)
+      |> into(<<>>, fn num -> <<num::8>> end)
 
     {springs, damage_counts}
   end
@@ -51,14 +52,14 @@ defmodule Day12 do
 
       {<<@spring_unknown, rest::binary>>, <<count_head, count_rst::binary>>, inseq} ->
         [@spring_operational, @spring_damaged]
-        |> Enum.map(
+        |> map(
           &ramaining_combos(
             <<&1, rest::binary>>,
             <<count_head, count_rst::binary>>,
             inseq
           )
         )
-        |> Enum.sum()
+        |> sum()
 
       {<<@spring_unknown, rest::binary>>, <<>>, false} ->
         ramaining_combos(rest, <<>>, false)
@@ -75,16 +76,16 @@ defmodule Day12 do
   def part(1, input) do
     input
     |> String.split(@line_break_pattern)
-    |> Enum.map(&parse_line(&1))
-    |> Enum.map(&count_combinations/1)
-    |> Enum.sum()
+    |> map(&parse_line(&1))
+    |> map(&count_combinations/1)
+    |> sum()
   end
 
   def part(2, input) do
     input
     |> String.split(@line_break_pattern)
-    |> Enum.map(&parse_line(&1, @part2_multiplier))
-    |> Enum.map(&count_combinations/1)
-    |> Enum.sum()
+    |> map(&parse_line(&1, @part2_multiplier))
+    |> map(&count_combinations/1)
+    |> sum()
   end
 end

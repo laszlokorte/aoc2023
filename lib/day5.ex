@@ -1,6 +1,8 @@
 defmodule Day5 do
   use AOC, day: 5
 
+  import Enum
+
   @min_range -1
   @blank_line_pattern ~r{\R\R}
   @digit_pattern ~r{\d+}
@@ -12,7 +14,7 @@ defmodule Day5 do
   end
 
   def to_integer_triple(list) do
-    list |> Enum.map(&String.to_integer/1) |> then(&List.to_tuple/1)
+    list |> map(&String.to_integer/1) |> then(&List.to_tuple/1)
   end
 
   def to_mapping_entry({src, dst, len}) do
@@ -21,25 +23,25 @@ defmodule Day5 do
 
   def parse_mappings_block(block) do
     Regex.scan(@mapping_pattern, block, capture: :all_but_first)
-    |> Enum.map(&to_integer_triple/1)
-    |> Enum.map(&to_mapping_entry/1)
+    |> map(&to_integer_triple/1)
+    |> map(&to_mapping_entry/1)
   end
 
   def parse_mappings(mapping_lines) do
     mapping_lines
     |> String.split(@blank_line_pattern, trim: true)
-    |> Enum.map(&parse_mappings_block/1)
+    |> map(&parse_mappings_block/1)
   end
 
   def parse_seeds_singlton(seed_line) do
     Regex.scan(@digit_pattern, seed_line)
-    |> Enum.map(fn [num] -> String.to_integer(num) end)
-    |> Enum.map(fn num -> Range.new(num, num) end)
+    |> map(fn [num] -> String.to_integer(num) end)
+    |> map(fn num -> Range.new(num, num) end)
   end
 
   def parse_seed_range(seed_line) do
     Regex.scan(@digit_pair_pattern, seed_line, capture: :all_but_first)
-    |> Enum.map(fn
+    |> map(fn
       [start, len] ->
         Range.new(
           String.to_integer(start),
@@ -57,19 +59,19 @@ defmodule Day5 do
 
   def pack_dense_ranges(ranges, upper_limit) do
     ranges
-    |> Enum.sort_by(fn {_, dst_start.._} -> dst_start end)
-    |> then(&Enum.concat([{@min_range, @min_range..@min_range}], &1))
-    |> then(&Enum.concat([&1, [{upper_limit, upper_limit..upper_limit}]]))
-    |> Enum.chunk_every(2, 1)
-    |> Enum.flat_map(&fill_range_gap/1)
+    |> sort_by(fn {_, dst_start.._} -> dst_start end)
+    |> then(&concat([{@min_range, @min_range..@min_range}], &1))
+    |> then(&concat([&1, [{upper_limit, upper_limit..upper_limit}]]))
+    |> chunk_every(2, 1)
+    |> flat_map(&fill_range_gap/1)
   end
 
   def pack_mappings(mappings, max) do
-    mappings |> Enum.map(&pack_dense_ranges(&1, max))
+    mappings |> map(&pack_dense_ranges(&1, max))
   end
 
   def clamp_range(from..to, bound_min..bound_max) do
-    max(from, bound_min)..min(to, bound_max)
+    Kernel.max(from, bound_min)..Kernel.min(to, bound_max)
   end
 
   def map_input_to_output(input, {src_start, dst_start..dst_end}) do
@@ -80,22 +82,22 @@ defmodule Day5 do
 
   def apply_mappings_to_one_input(mappings, input) do
     mappings
-    |> Enum.filter(fn {_, dst} -> not Range.disjoint?(input, dst) end)
-    |> Enum.map(&map_input_to_output(input, &1))
+    |> filter(fn {_, dst} -> not Range.disjoint?(input, dst) end)
+    |> map(&map_input_to_output(input, &1))
   end
 
   def apply_mappings(mappings, inputs) do
-    inputs |> Enum.flat_map(&apply_mappings_to_one_input(mappings, &1))
+    inputs |> flat_map(&apply_mappings_to_one_input(mappings, &1))
   end
 
   def find_dependencies(maps, seeds) do
-    maps |> Enum.reduce(seeds, &apply_mappings/2)
+    maps |> reduce(seeds, &apply_mappings/2)
   end
 
   def highest_value(seeds, mappings) do
-    max(
-      List.flatten(mappings) |> Enum.map(fn {s, a..b} -> s + (b - a) end) |> Enum.max(),
-      seeds |> Enum.map(&Enum.max/1) |> Enum.max()
+    Kernel.max(
+      List.flatten(mappings) |> map(fn {s, a..b} -> s + (b - a) end) |> max(),
+      seeds |> map(&max/1) |> max()
     )
   end
 
@@ -108,7 +110,7 @@ defmodule Day5 do
     mappings
     |> pack_mappings(highest_value(seeds, mappings))
     |> find_dependencies(seeds)
-    |> Enum.map(&Enum.min/1)
+    |> map(&min/1)
     |> Enum.min()
   end
 
@@ -121,7 +123,7 @@ defmodule Day5 do
     mappings
     |> pack_mappings(highest_value(seeds, mappings))
     |> find_dependencies(seeds)
-    |> Enum.map(&Enum.min/1)
+    |> map(&min/1)
     |> Enum.min()
   end
 end

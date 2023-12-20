@@ -1,6 +1,8 @@
 defmodule Day16 do
   use AOC, day: 16
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @initial_ray {{-1, 0}, :right}
 
@@ -39,23 +41,23 @@ defmodule Day16 do
     map =
       input
       |> String.split(@line_break_pattern)
-      |> Enum.with_index()
-      |> Enum.flat_map(fn
+      |> with_index()
+      |> flat_map(fn
         {line, y} ->
           line
           |> String.codepoints()
-          |> Enum.with_index()
-          |> Enum.filter(fn
+          |> with_index()
+          |> filter(fn
             {char, _} -> not is_empty(char)
           end)
-          |> Enum.map(fn
+          |> map(fn
             {char, x} -> {{x, y}, parse_element(char)}
           end)
       end)
-      |> Enum.into(Map.new())
+      |> into(Map.new())
 
-    {width, _} = map |> Map.keys() |> Enum.max_by(&elem(&1, 0))
-    {_, height} = map |> Map.keys() |> Enum.max_by(&elem(&1, 1))
+    {width, _} = map |> Map.keys() |> max_by(&elem(&1, 0))
+    {_, height} = map |> Map.keys() |> max_by(&elem(&1, 1))
 
     {
       map,
@@ -67,19 +69,19 @@ defmodule Day16 do
   def ray_step({pos, dir}, elements) do
     case Map.get(elements, pos) do
       nil -> [{step(pos, dir), dir}]
-      element -> interact(element, dir) |> Enum.map(&{step(pos, &1), &1})
+      element -> interact(element, dir) |> map(&{step(pos, &1), &1})
     end
   end
 
   def time_step({active_rays, visited}, {elements, w, h}) do
     new_rayfront =
       active_rays
-      |> Enum.flat_map(&ray_step(&1, elements))
-      |> Enum.filter(fn
+      |> flat_map(&ray_step(&1, elements))
+      |> filter(fn
         {{x, y}, _} -> x in 0..w and y in 0..h
       end)
-      |> Enum.filter(fn r -> not MapSet.member?(visited, r) end)
-      |> Enum.into(MapSet.new())
+      |> filter(fn r -> not MapSet.member?(visited, r) end)
+      |> into(MapSet.new())
 
     {new_rayfront, MapSet.union(new_rayfront, visited)}
   end
@@ -92,21 +94,21 @@ defmodule Day16 do
     initial
     |> init_ray
     |> Stream.iterate(&time_step(&1, landscape))
-    |> Enum.find(fn
+    |> find(fn
       {active, _} -> MapSet.size(active) == 0
     end)
     |> elem(1)
-    |> Enum.map(fn {pos, _} -> pos end)
-    |> Enum.into(MapSet.new())
-    |> Enum.count()
+    |> map(fn {pos, _} -> pos end)
+    |> into(MapSet.new())
+    |> count()
   end
 
   def initial_positions(w, h) do
     []
-    |> Enum.concat(Enum.map(0..w, &{{&1, -1}, :down}))
-    |> Enum.concat(Enum.map(0..w, &{{&1, h + 1}, :up}))
-    |> Enum.concat(Enum.map(0..w, &{{-1, &1}, :right}))
-    |> Enum.concat(Enum.map(0..w, &{{w + 1, &1}, :left}))
+    |> concat(map(0..w, &{{&1, -1}, :down}))
+    |> concat(map(0..w, &{{&1, h + 1}, :up}))
+    |> concat(map(0..w, &{{-1, &1}, :right}))
+    |> concat(map(0..w, &{{w + 1, &1}, :left}))
   end
 
   def part(1, input) do
@@ -119,7 +121,7 @@ defmodule Day16 do
     landscape = {_, w, h} = parse(input)
 
     initial_positions(w, h)
-    |> Enum.map(&stable_energy(&1, landscape))
-    |> Enum.max()
+    |> map(&stable_energy(&1, landscape))
+    |> max()
   end
 end

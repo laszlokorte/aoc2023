@@ -1,6 +1,8 @@
 defmodule Day2 do
   use AOC, day: 2
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @line_pattern ~r/Game (?<number>\d+): (?<rounds>.*)/
   @round_pattern ~r/(?<count>\d+) (?<color>\w+)/
@@ -13,8 +15,8 @@ defmodule Day2 do
   def parse_rounds(all_rounds) do
     all_rounds
     |> String.split(";", trim: true)
-    |> Enum.map(&Regex.scan(@round_pattern, &1, capture: :all_but_first))
-    |> Enum.map(&Enum.into(&1, %{}, fn [a, b] -> {b, a |> String.to_integer()} end))
+    |> map(&Regex.scan(@round_pattern, &1, capture: :all_but_first))
+    |> map(&into(&1, %{}, fn [a, b] -> {b, a |> String.to_integer()} end))
   end
 
   def parse_game(line) do
@@ -27,42 +29,42 @@ defmodule Day2 do
   end
 
   def round_is_possible(one_round, max_cubes) do
-    one_round |> Enum.all?(fn {col, num} -> max_cubes[col] >= num end)
+    one_round |> all?(fn {col, num} -> max_cubes[col] >= num end)
   end
 
   def game_is_possible({_, rounds}) do
-    Enum.all?(rounds, &Day2.round_is_possible(&1, @setup_part1))
+    all?(rounds, &Day2.round_is_possible(&1, @setup_part1))
   end
 
   def required_cube_count({_, rounds}) do
-    Enum.reduce(
+    reduce(
       rounds,
       %{},
       &Map.merge(&1, &2, fn _k, x, y ->
-        max(x, y)
+        Kernel.max(x, y)
       end)
     )
   end
 
   def cubes_power(cubes) do
-    Map.values(cubes) |> Enum.reduce(1, &(&1 * &2))
+    Map.values(cubes) |> reduce(1, &(&1 * &2))
   end
 
   def part(1, input) do
     input
     |> String.split(@line_break_pattern, trim: true)
-    |> Enum.map(&Day2.parse_game/1)
-    |> Enum.filter(&Day2.game_is_possible/1)
-    |> Enum.map(&elem(&1, 0))
-    |> Enum.sum()
+    |> map(&Day2.parse_game/1)
+    |> filter(&Day2.game_is_possible/1)
+    |> map(&elem(&1, 0))
+    |> sum()
   end
 
   def part(2, input) do
     input
     |> String.split(@line_break_pattern, trim: true)
-    |> Enum.map(&Day2.parse_game/1)
-    |> Enum.map(&Day2.required_cube_count/1)
-    |> Enum.map(&Day2.cubes_power/1)
-    |> Enum.sum()
+    |> map(&Day2.parse_game/1)
+    |> map(&Day2.required_cube_count/1)
+    |> map(&Day2.cubes_power/1)
+    |> sum()
   end
 end

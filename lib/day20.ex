@@ -1,6 +1,8 @@
 defmodule Day20 do
   use AOC, day: 20
 
+  import Enum
+
   @line_break_pattern ~r{\R}
   @stop_register "rx"
   @flipflop ?%
@@ -16,10 +18,10 @@ defmodule Day20 do
 
   def parse_line(line) do
     [source, sink] =
-      line |> String.split(@wire_edge, trim: true, parts: 2) |> Enum.map(&String.trim/1)
+      line |> String.split(@wire_edge, trim: true, parts: 2) |> map(&String.trim/1)
 
     {kind, name} = source |> parse_source
-    out = sink |> String.split(@comma) |> Enum.map(&String.trim/1)
+    out = sink |> String.split(@comma) |> map(&String.trim/1)
 
     {name, {kind, out}}
   end
@@ -27,21 +29,21 @@ defmodule Day20 do
   def parse(input) do
     input
     |> String.split(@line_break_pattern)
-    |> Enum.map(&parse_line/1)
-    |> Enum.into(Map.new())
+    |> map(&parse_line/1)
+    |> into(Map.new())
   end
 
   def transfere_local_pulse({:flipflop, _outs}, _mem, true), do: []
 
   def transfere_local_pulse({:flipflop, outs}, mem, false),
-    do: Enum.map(outs, fn out -> {out, mem} end)
+    do: map(outs, fn out -> {out, mem} end)
 
   def transfere_local_pulse({:nand, outs}, mem, _pulse) do
-    outs |> Enum.map(fn out -> {out, not Enum.all?(mem, &elem(&1, 1))} end)
+    outs |> map(fn out -> {out, not all?(mem, &elem(&1, 1))} end)
   end
 
   def transfere_local_pulse({:broadcast, outs}, _mem, pulse) do
-    outs |> Enum.map(fn out -> {out, pulse} end)
+    outs |> map(fn out -> {out, pulse} end)
   end
 
   def update_local_memory(:flipflop, mem, {_from, true}), do: mem
@@ -56,19 +58,19 @@ defmodule Day20 do
 
       {el, mem} ->
         transfere_local_pulse(el, mem, value)
-        |> Enum.map(fn
+        |> map(fn
           {new_to, out_val} -> {to, new_to, out_val}
         end)
     end
   end
 
   def propagate_pulses(circuit, memory, active_pulses) do
-    active_pulses |> Enum.flat_map(&propagate_pulse(circuit, memory, &1))
+    active_pulses |> flat_map(&propagate_pulse(circuit, memory, &1))
   end
 
   def update_memory(circuit, memory, active_pulses) do
     active_pulses
-    |> Enum.reduce(memory, fn
+    |> reduce(memory, fn
       {from, to, v}, mem ->
         Map.get(circuit, to)
         |> case do
@@ -94,11 +96,11 @@ defmodule Day20 do
 
   def init_local_memory(:nand, name, circuit) do
     circuit
-    |> Enum.filter(fn
-      {_from, {_, tos}} -> Enum.any?(tos, &(&1 == name))
+    |> filter(fn
+      {_from, {_, tos}} -> any?(tos, &(&1 == name))
     end)
-    |> Enum.map(fn {from, _} -> {from, false} end)
-    |> Enum.into(Map.new())
+    |> map(fn {from, _} -> {from, false} end)
+    |> into(Map.new())
   end
 
   def init_local_memory(_kind, _name, _circuit) do
@@ -107,9 +109,9 @@ defmodule Day20 do
 
   def init_memory(circuit) do
     circuit
-    |> Enum.map(fn {name, {kind, _}} -> {name, init_local_memory(kind, name, circuit)} end)
-    |> Enum.filter(fn {_, mem} -> not is_nil(mem) end)
-    |> Enum.into(Map.new())
+    |> map(fn {name, {kind, _}} -> {name, init_local_memory(kind, name, circuit)} end)
+    |> filter(fn {_, mem} -> not is_nil(mem) end)
+    |> into(Map.new())
   end
 
   def simulate_until_stable_or_stop(circuit, memory, pulses, stop_when \\ nil) do
@@ -119,19 +121,19 @@ defmodule Day20 do
       {mem, active_pulses} ->
         {
           mem,
-          Enum.count(active_pulses, fn
+          count(active_pulses, fn
             {_, _, val} -> val
           end),
-          Enum.count(active_pulses, fn
+          count(active_pulses, fn
             {_, _, val} -> not val
           end),
-          not is_nil(Enum.find(active_pulses, fn {_from, to, val} -> stop_when == {to, val} end))
+          not is_nil(find(active_pulses, fn {_from, to, val} -> stop_when == {to, val} end))
         }
     end)
     |> Stream.take_while(fn
       {_, a, b, stop_now} -> a != 0 or b != 0 or stop_now
     end)
-    |> Enum.reduce(fn
+    |> reduce(fn
       {mem, high_pulse_count, low_pulse_count, stop_now},
       {_, high_pulse_sum, low_pulse_sum, stopped} ->
         {mem, high_pulse_sum + high_pulse_count, low_pulse_sum + low_pulse_count,
@@ -149,13 +151,13 @@ defmodule Day20 do
   def find_multiple_predecessors(circuit, names) do
     Stream.iterate(MapSet.new([names]), fn nameset ->
       circuit
-      |> Enum.filter(fn
-        {_from, {_, tos}} -> Enum.any?(tos, &MapSet.member?(nameset, &1))
+      |> filter(fn
+        {_from, {_, tos}} -> any?(tos, &MapSet.member?(nameset, &1))
       end)
-      |> Enum.map(&elem(&1, 0))
-      |> Enum.into(MapSet.new())
+      |> map(&elem(&1, 0))
+      |> into(MapSet.new())
     end)
-    |> Enum.find(fn nameset -> MapSet.size(nameset) > 1 end)
+    |> find(fn nameset -> MapSet.size(nameset) != 1 end)
   end
 
   def trigger_pulses_until(circuit, memory, pulses, stop \\ nil) do
@@ -166,7 +168,8 @@ defmodule Day20 do
           {new_mem, stopped, low_sum + low, high_sum + high}
         end
 
-      keep -> keep
+      keep ->
+        keep
     end)
   end
 
@@ -175,7 +178,7 @@ defmodule Day20 do
     memory = init_memory(circuit)
 
     trigger_pulses_until(circuit, memory, @initial_pulse)
-    |> Enum.at(1000)
+    |> at(1000)
     |> then(fn {_, _, l, h} -> {l, h} end)
     |> Tuple.product()
   end
@@ -185,8 +188,8 @@ defmodule Day20 do
     memory = init_memory(circuit)
 
     find_multiple_predecessors(circuit, @stop_register)
-    |> Enum.map(&trigger_pulses_until(circuit, memory, @initial_pulse, {&1, false}))
-    |> Enum.map(&Enum.find_index(&1, fn {_, stopped, _, _} -> stopped end))
-    |> Enum.reduce(1, &lcm/2)
+    |> map(&trigger_pulses_until(circuit, memory, @initial_pulse, {&1, false}))
+    |> map(&find_index(&1, fn {_, stopped, _, _} -> stopped end))
+    |> reduce(1, &lcm/2)
   end
 end
