@@ -2,6 +2,7 @@ defmodule Day20 do
   use AOC, day: 20
 
   @line_break_pattern ~r{\R}
+  @stop_register "rx"
 
   def parse_from(<<?%, name::binary>>), do: {:flipflop, name}
   def parse_from(<<?&, name::binary>>), do: {:nand, name}
@@ -142,6 +143,25 @@ defmodule Day20 do
     end)
   end
 
+  def lcm(a, b)
+  def lcm(0, 0), do: 0
+  def lcm(a, b), do: abs(Kernel.div(a * b, gcd(a, b)))
+
+  def gcd(x, 0), do: x
+  def gcd(x, y), do: gcd(y, rem(x, y))
+
+  def find_multiple_predecessors(circuit, names) do
+    Stream.iterate(MapSet.new([names]), fn nameset ->
+      circuit
+      |> Enum.filter(fn
+        {_from, {_, tos}} -> Enum.any?(tos, &MapSet.member?(nameset, &1))
+      end)
+      |> Enum.map(&elem(&1, 0))
+      |> Enum.into(MapSet.new())
+    end)
+    |> Enum.find(fn nameset -> MapSet.size(nameset) > 1 end)
+  end
+
   def part(1, input) do
     circuit = input |> parse
     memory = init_memory(circuit)
@@ -162,15 +182,19 @@ defmodule Day20 do
     circuit = input |> parse
     memory = init_memory(circuit)
 
-    Stream.iterate({memory, false}, fn
-      {mem, false} ->
-        simulate_until_stable(circuit, mem, [{"button", "broadcaster", false}], {"rx", false})
-        |> case do
-          {new_mem, _, _, stopped} -> {new_mem, stopped}
-          {mem, true} -> {mem, false}
-        end
+    find_multiple_predecessors(circuit, @stop_register)
+    |> Enum.map(fn gate ->
+      Stream.iterate({memory, false}, fn
+        {mem, false} ->
+          simulate_until_stable(circuit, mem, [{"button", "broadcaster", false}], {gate, false})
+          |> case do
+            {new_mem, _, _, stopped} -> {new_mem, stopped}
+            {mem, true} -> {mem, false}
+          end
+      end)
+      |> Enum.take_while(fn {_, stopped} -> not stopped end)
+      |> Enum.count()
     end)
-    |> Enum.take_while(fn {_, stopped} -> not stopped end)
-    |> Enum.count()
+    |> Enum.reduce(1, &lcm/2)
   end
 end
