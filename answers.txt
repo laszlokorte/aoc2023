@@ -1,190 +1,76 @@
-Compiling 1 file (.ex)
-## Day 1 ##
-Part 1 Test:
-142
-Part 1 Prod:
-55834
-Part 2 Test:
-281
-Part 2 Prod:
-53221
-
-## Day 2 ##
-Part 1 Test:
-8
-Part 1 Prod:
-2265
-Part 2 Test:
-2286
-Part 2 Prod:
-64097
-
-## Day 3 ##
-Part 1 Test:
-4361
-Part 1 Prod:
-498559
-Part 2 Test:
-467835
-Part 2 Prod:
-72246648
-
-## Day 4 ##
-Part 1 Test:
-13
-Part 1 Prod:
-25004
-Part 2 Test:
-30
-Part 2 Prod:
-14427616
-
-## Day 5 ##
-Part 1 Test:
-35
-Part 1 Prod:
-457535844
-Part 2 Test:
-46
-Part 2 Prod:
-41222968
-
-## Day 6 ##
-Part 1 Test:
-288
-Part 1 Prod:
-170000
-Part 2 Test:
-71503
-Part 2 Prod:
-20537782
-
-## Day 7 ##
-Part 1 Test:
-6440
-Part 1 Prod:
-252295678
-Part 2 Test:
-5905
-Part 2 Prod:
-250577259
-
-## Day 8 ##
-Part 1 Test:
-2
-Part 1 Prod:
-18157
-Part 2 Test:
-6
-Part 2 Prod:
-14299763833181
-
-## Day 9 ##
-Part 1 Test:
-114
-Part 1 Prod:
-2005352194
-Part 2 Test:
-2
-Part 2 Prod:
-1077
-
-## Day 10 ##
-Part 1 Test:
-8
-Part 1 Prod:
-6599
-Part 2 Test:
-10
-Part 2 Prod:
-477
-
-## Day 11 ##
-Part 1 Test:
-374
-Part 1 Prod:
-9177603
-Part 2 Test:
-82000210
-Part 2 Prod:
-632003913611
-
-## Day 12 ##
-Part 1 Test:
-21
-Part 1 Prod:
-7025
-Part 2 Test:
-525152
-Part 2 Prod:
-11461095383315
-
-## Day 13 ##
-Part 1 Test:
-405
-Part 1 Prod:
-30535
-Part 2 Test:
-400
-Part 2 Prod:
-30844
-
-## Day 14 ##
-Part 1 Test:
-136
-Part 1 Prod:
-113456
-Part 2 Test:
-64
-Part 2 Prod:
-118747
-
-## Day 15 ##
-Part 1 Test:
-1320
-Part 1 Prod:
-511343
-Part 2 Test:
-145
-Part 2 Prod:
-294474
-
-## Day 16 ##
-Part 1 Test:
-46
-Part 1 Prod:
-7060
-Part 2 Test:
-51
-Part 2 Prod:
-7493
-
-## Day 17 ##
-Part 1 Test:
-113
-Part 1 Prod:
-1004
-Part 2 Test:
-94
-Part 2 Prod:
-1171
-
-## Day 18 ##
-Part 1 test:
-62
-Part 1 prod:
-47527
-Part 2 test:
-952408144115
-Part 2 prod:
-52240187443190
-
-## Day 19 ##
-Part 1 test: 
-19114
-Part 1 prod: 
-406849
-Part 2 test: 
-167409079868000
-Part 2 prod: 
-138625360533574
+Day 1, Part 1, test: 142
+Day 1, Part 1, prod: 55834
+Day 1, Part 2, test: 281
+Day 1, Part 2, prod: 53221
+Day 2, Part 1, test: 8
+Day 2, Part 1, prod: 2265
+Day 2, Part 2, test: 2286
+Day 2, Part 2, prod: 64097
+Day 3, Part 1, test: 4361
+Day 3, Part 1, prod: 498559
+Day 3, Part 2, test: 467835
+Day 3, Part 2, prod: 72246648
+Day 4, Part 1, test: 13
+Day 4, Part 1, prod: 25004
+Day 4, Part 2, test: 30
+Day 4, Part 2, prod: 14427616
+Day 5, Part 1, test: 35
+Day 5, Part 1, prod: 457535844
+Day 5, Part 2, test: 46
+Day 5, Part 2, prod: 41222968
+Day 6, Part 1, test: 288
+Day 6, Part 1, prod: 170000
+Day 6, Part 2, test: 71503
+Day 6, Part 2, prod: 20537782
+Day 7, Part 1, test: 6440
+Day 7, Part 1, prod: 252295678
+Day 7, Part 2, test: 5905
+Day 7, Part 2, prod: 250577259
+Day 8, Part 1, test: 2
+Day 8, Part 1, prod: 18157
+Day 8, Part 2, test: 6
+Day 8, Part 2, prod: 14299763833181
+Day 9, Part 1, test: 114
+Day 9, Part 1, prod: 2005352194
+Day 9, Part 2, test: 2
+Day 9, Part 2, prod: 1077
+Day 10, Part 1, test: 8
+Day 10, Part 1, prod: 6599
+Day 10, Part 2, test: 10
+Day 10, Part 2, prod: 477
+Day 11, Part 1, test: 374
+Day 11, Part 1, prod: 9177603
+Day 11, Part 2, test: 82000210
+Day 11, Part 2, prod: 632003913611
+Day 12, Part 1, test: 21
+Day 12, Part 1, prod: 7025
+Day 12, Part 2, test: 525152
+Day 12, Part 2, prod: 11461095383315
+Day 13, Part 1, test: 405
+Day 13, Part 1, prod: 30535
+Day 13, Part 2, test: 400
+Day 13, Part 2, prod: 30844
+Day 14, Part 1, test: 136
+Day 14, Part 1, prod: 113456
+Day 14, Part 2, test: 64
+Day 14, Part 2, prod: 118747
+Day 15, Part 1, test: 1320
+Day 15, Part 1, prod: 511343
+Day 15, Part 2, test: 145
+Day 15, Part 2, prod: 294474
+Day 16, Part 1, test: 46
+Day 16, Part 1, prod: 7060
+Day 16, Part 2, test: 51
+Day 16, Part 2, prod: 7493
+Day 17, Part 1, test: 102
+Day 17, Part 1, prod: 1004
+Day 17, Part 2, test: 94
+Day 17, Part 2, prod: 1171
+Day 18, Part 1, test: 62
+Day 18, Part 1, prod: 47527
+Day 18, Part 2, test: 952408144115
+Day 18, Part 2, prod: 52240187443190
+Day 19, Part 1, test: 19114
+Day 19, Part 1, prod: 406849
+Day 19, Part 2, test: 167409079868000
+Day 19, Part 2, prod: 138625360533574
