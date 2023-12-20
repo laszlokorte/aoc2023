@@ -11,15 +11,11 @@ defmodule Day5 do
     String.split(input, @blank_line_pattern, trim: true, parts: 2)
   end
 
-  def to_integer_triple([dst, src, len]) do
-    {
-      String.to_integer(src),
-      String.to_integer(dst),
-      String.to_integer(len)
-    }
+  def to_integer_triple(list) do
+    list |> Enum.map(&String.to_integer/1) |> then(&List.to_tuple/1)
   end
 
-  def to_mapping_entry({dst, src, len}) do
+  def to_mapping_entry({src, dst, len}) do
     {src, Range.new(dst, dst + len - 1)}
   end
 
@@ -30,7 +26,8 @@ defmodule Day5 do
   end
 
   def parse_mappings(mapping_lines) do
-    String.split(mapping_lines, @blank_line_pattern, trim: true)
+    mapping_lines
+    |> String.split(@blank_line_pattern, trim: true)
     |> Enum.map(&parse_mappings_block/1)
   end
 
@@ -61,8 +58,8 @@ defmodule Day5 do
   def pack_dense_ranges(ranges, upper_limit) do
     ranges
     |> Enum.sort_by(fn {_, dst_start.._} -> dst_start end)
-    |> (&Enum.concat([{@min_range, @min_range..@min_range}], &1)).()
-    |> (&Enum.concat([&1, [{upper_limit, upper_limit..upper_limit}]])).()
+    |> then(&Enum.concat([{@min_range, @min_range..@min_range}], &1))
+    |> then(&Enum.concat([&1, [{upper_limit, upper_limit..upper_limit}]]))
     |> Enum.chunk_every(2, 1)
     |> Enum.flat_map(&fill_range_gap/1)
   end

@@ -85,16 +85,14 @@ defmodule Day8 do
     |> WalkStep.cycle_length()
   end
 
-  def steps_to_goal(network, directions, start, goal_suffix) do
+  def steps_to_goal({directions, network}, start, goal_suffix) do
     repeated_directions = directions |> Stream.cycle()
 
-    steps =
-      repeated_directions
-      |> Stream.scan(start, &walk(network, &1, &2))
-      |> Stream.take_while(&(not String.ends_with?(&1, goal_suffix)))
-      |> Enum.count()
-
-    steps + 1
+    repeated_directions
+    |> Stream.scan(start, &walk(network, &1, &2))
+    |> Stream.take_while(&(not String.ends_with?(&1, goal_suffix)))
+    |> Enum.count()
+    |> then(&(&1 + 1))
   end
 
   def lcm(a, b)
@@ -105,9 +103,7 @@ defmodule Day8 do
   def gcd(x, y), do: gcd(y, rem(x, y))
 
   def part(1, input) do
-    {directions, network} = parse_input(input)
-
-    steps_to_goal(network, directions, @single_start, @goal_suffix)
+    parse_input(input) |> steps_to_goal(@single_start, @goal_suffix)
   end
 
   def part(2, input) do

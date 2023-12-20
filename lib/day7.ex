@@ -1,6 +1,7 @@
 defmodule Day7 do
   use AOC, day: 7
 
+  @line_break_pattern ~r{\R}
   @cards_part1 ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"]
   @cards_part2 ["A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"]
   @jokers_part1 MapSet.new()
@@ -56,13 +57,13 @@ defmodule Day7 do
 
   def calculate_hands(input, card_order, joker) do
     input
-    |> String.split(~r{\R}, trim: true)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&parse_hand(&1))
     |> Enum.sort_by(&hand_bid_rank(&1, card_order, joker))
     |> Enum.map(&elem(&1, 0))
     |> Enum.reverse()
     |> Enum.with_index(1)
-    |> Enum.map(fn {bid, index} -> bid * index end)
+    |> Enum.map(&Tuple.product/1)
     |> Enum.sum()
   end
 

@@ -5,27 +5,27 @@ defmodule Day18 do
   @line_break_pattern ~r{\R}
   @line_pattern ~r"(?<dir>R|D|U|L) (?<dist>\d+) \(#(?<col>[0-9abcdef]{6})\)"
 
+  def parse_dir(:letter, "D"), do: :down
+  def parse_dir(:letter, "R"), do: :right
+  def parse_dir(:letter, "L"), do: :left
+  def parse_dir(:letter, "U"), do: :up
+
+  def parse_dir(:num, "0"), do: :right
+  def parse_dir(:num, "1"), do: :down
+  def parse_dir(:num, "2"), do: :left
+  def parse_dir(:num, "3"), do: :up
+
   def parse_line_simple(line) do
     [dir, dist] = Regex.run(@line_pattern, line, capture: [:dir, :dist])
 
-    {case dir do
-       "D" -> :down
-       "R" -> :right
-       "L" -> :left
-       "U" -> :up
-     end, String.to_integer(dist)}
+    {parse_dir(:letter, dir), String.to_integer(dist)}
   end
 
   def parse_line_hex(line) do
     [<<dist::binary-size(5), dir::binary-size(1)>>] =
       Regex.run(@line_pattern, line, capture: [:col])
 
-    {case dir do
-       "0" -> :right
-       "1" -> :down
-       "2" -> :left
-       "3" -> :up
-     end, String.to_integer(dist, 16)}
+    {parse_dir(:num, dir), String.to_integer(dist, 16)}
   end
 
   def parse(input, line_parsers) do

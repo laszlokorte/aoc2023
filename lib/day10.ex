@@ -149,7 +149,7 @@ defmodule Day10 do
     test_candiates
     |> Enum.count(fn {x, y} ->
       cast_grid_ray({x, y}, @ray_direction, size)
-      |> (&ray_count_hits(pipe_map, used_positions, &1)).()
+      |> then(&ray_count_hits(pipe_map, used_positions, &1))
       |> Integer.is_odd()
     end)
   end
@@ -181,7 +181,7 @@ defmodule Day10 do
         else
           is_inside =
             cast_grid_ray({x, y}, @ray_direction, size)
-            |> (&ray_count_hits(pipe_map, used_positions, &1)).()
+            |> then(&ray_count_hits(pipe_map, used_positions, &1))
             |> Integer.is_odd()
 
           if is_inside do

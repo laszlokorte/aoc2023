@@ -50,16 +50,15 @@ defmodule Day12 do
         ramaining_combos(rest, <<count_head - 1, count_rst::binary>>, true)
 
       {<<@spring_unknown, rest::binary>>, <<count_head, count_rst::binary>>, inseq} ->
-        ramaining_combos(
-          <<@spring_operational, rest::binary>>,
-          <<count_head, count_rst::binary>>,
-          inseq
-        ) +
-          ramaining_combos(
-            <<@spring_damaged, rest::binary>>,
+        [@spring_operational, @spring_damaged]
+        |> Enum.map(
+          &ramaining_combos(
+            <<&1, rest::binary>>,
             <<count_head, count_rst::binary>>,
             inseq
           )
+        )
+        |> Enum.sum()
 
       {<<@spring_unknown, rest::binary>>, <<>>, false} ->
         ramaining_combos(rest, <<>>, false)

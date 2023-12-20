@@ -2,12 +2,13 @@ defmodule Day6 do
   use AOC, day: 6
 
   @digits ~r{\d+}
+  @line_break_pattern ~r{\R}
 
   def integers_between({a, b}) do
     round(:math.floor(b) - :math.ceil(a) + 1)
   end
 
-  def pq_zeros(p, q) do
+  def pq_zeros(p, q) when p * p > q * 4 do
     {-p / 2 - :math.sqrt(p ** 2 / 4 - q - 1), -p / 2 + :math.sqrt(p ** 2 / 4 - q - 1)}
   end
 
@@ -16,7 +17,7 @@ defmodule Day6 do
   end
 
   def part(1, input) do
-    [timeline, distanceline] = String.split(input, ~r{\R}, limit: 1, trim: true)
+    [timeline, distanceline] = String.split(input, @line_break_pattern, limit: 1, trim: true)
     times = @digits |> Regex.scan(timeline) |> Enum.map(&single_int/1)
     distances = @digits |> Regex.scan(distanceline) |> Enum.map(&single_int/1)
 

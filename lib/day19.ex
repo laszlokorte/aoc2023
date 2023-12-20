@@ -52,16 +52,16 @@ defmodule Day19 do
   end
 
   def parse(input) do
-    [workflows, parts] = input |> String.split(@empty_line_pattern, parts: 2)
+    [workflows_string, parts_string] = input |> String.split(@empty_line_pattern, parts: 2)
 
     workflows =
       @workflow_pattern
-      |> Regex.scan(workflows, capture: [:name, :rules])
+      |> Regex.scan(workflows_string, capture: [:name, :rules])
       |> Enum.map(&parse_workflow/1)
       |> Enum.into(Map.new())
 
     parts =
-      parts
+      parts_string
       |> String.split(@line_break_pattern)
       |> Enum.map(&String.trim_leading(&1, "{"))
       |> Enum.map(&String.trim_trailing(&1, "}"))
@@ -73,11 +73,11 @@ defmodule Day19 do
   def process_single_part_step(part, workflow) do
     workflow
     |> Enum.find_value(fn
-      {:default, r} -> r
-      {{field, :>, comp}, r} -> if part[field] > comp, do: r
-      {{field, :<, comp}, r} -> if part[field] < comp, do: r
-      _ -> nil
+      {:default, r} -> {:ok, r}
+      {{field, :>, comp}, r} -> if part[field] > comp, do: {:ok, r}
+      {{field, :<, comp}, r} -> if part[field] < comp, do: {:ok, r}
     end)
+    |> elem(1)
   end
 
   def process_single_part(part, workflows) do
@@ -85,9 +85,7 @@ defmodule Day19 do
       r when is_boolean(r) -> r
       wf -> process_single_part_step(part, Map.get(workflows, wf))
     end)
-    |> Enum.find(fn
-      x -> is_boolean(x)
-    end)
+    |> Enum.find(&is_boolean/1)
   end
 
   def split_range(range, comp_op, comp_val) do

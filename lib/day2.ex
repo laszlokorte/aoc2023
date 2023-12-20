@@ -1,6 +1,7 @@
 defmodule Day2 do
   use AOC, day: 2
 
+  @line_break_pattern ~r{\R}
   @line_pattern ~r/Game (?<number>\d+): (?<rounds>.*)/
   @round_pattern ~r/(?<count>\d+) (?<color>\w+)/
   @setup_part1 %{
@@ -49,7 +50,7 @@ defmodule Day2 do
 
   def part(1, input) do
     input
-    |> String.split(~r{\R}, trim: true)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&Day2.parse_game/1)
     |> Enum.filter(&Day2.game_is_possible/1)
     |> Enum.map(&elem(&1, 0))
@@ -58,7 +59,7 @@ defmodule Day2 do
 
   def part(2, input) do
     input
-    |> String.split(~r{\R}, trim: true)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&Day2.parse_game/1)
     |> Enum.map(&Day2.required_cube_count/1)
     |> Enum.map(&Day2.cubes_power/1)

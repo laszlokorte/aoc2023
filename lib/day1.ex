@@ -1,6 +1,7 @@
 defmodule Day1 do
   use AOC, day: 1
 
+  @line_break_pattern ~r{\R}
   @part1pattern ~r/(?=(\d))/
   @part2words ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
   @part2pattern ~r/(?=(\d|#{@part2words |> Enum.join("|")}))/
@@ -35,7 +36,7 @@ defmodule Day1 do
 
   def part(1, input) do
     input
-    |> String.split(~r{\R}, trim: true)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part1pattern))
     |> Enum.map(&Day1.first_and_last/1)
     |> Enum.map(&Day1.all_digits_to_int(&1))
@@ -45,7 +46,7 @@ defmodule Day1 do
 
   def part(2, input) do
     input
-    |> String.split(~r{\R}, trim: true)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&Day1.find_matches(&1, @part2pattern))
     |> Enum.map(&Day1.first_and_last/1)
     |> Enum.map(&Day1.all_digits_to_int(&1, @part2words))

@@ -7,22 +7,17 @@ defmodule Day15 do
   @boxes 0..(@box_count - 1) |> Enum.into(Map.new(), fn i -> {i, []} end)
   @sub "-"
 
-  def hash(<<>>, acc) do
-    acc
-  end
+  def hash(<<>>, acc), do: acc
 
   def hash(<<first::utf8, rest::binary>>, acc) do
     hash(rest, rem((acc + first) * @hash_mod, @box_count))
   end
 
-  def hash(string) do
-    string |> hash(0)
-  end
+  def hash(string), do: hash(string, 0)
 
   def parse_operation(op) do
-    match = Regex.run(@op_pattern, op, capture: [:lense, :focal, :sub])
-
-    case match do
+    Regex.run(@op_pattern, op, capture: [:lense, :focal, :sub])
+    |> case do
       [lense, focal, ""] -> {hash(lense), String.to_atom(lense), String.to_integer(focal)}
       [lense, "", @sub] -> {hash(lense), String.to_atom(lense), :sub}
     end

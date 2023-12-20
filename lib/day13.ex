@@ -8,16 +8,16 @@ defmodule Day13 do
   def parse_cell("."), do: 0
 
   def parse_grid(input) do
-    grid =
-      input
-      |> String.split(@line_break_pattern, trim: true)
-      |> Enum.map(&String.codepoints/1)
-      |> Enum.map(fn line -> Enum.map(line, &parse_cell/1) end)
-
-    [
-      {:x, transpose(grid)},
-      {:y, grid}
-    ]
+    input
+    |> String.split(@line_break_pattern, trim: true)
+    |> Enum.map(&String.codepoints/1)
+    |> Enum.map(fn line -> Enum.map(line, &parse_cell/1) end)
+    |> then(
+      &[
+        {:x, transpose(&1)},
+        {:y, &1}
+      ]
+    )
   end
 
   def transpose(grid) do

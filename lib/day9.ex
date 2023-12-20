@@ -4,22 +4,20 @@ defmodule Day9 do
   @line_break_pattern ~r{\R}
   @spaces ~r{\s+}
 
-  def predict_next(seq) do
+  def predict_prev([head | _] = seq) do
     if Enum.all?(seq, &(&1 == 0)) do
       0
     else
-      diff =
-        seq
-        |> Enum.chunk_every(2, 1, :discard)
-        |> Enum.map(fn [a, b] -> b - a end)
-        |> predict_next
-
-      List.last(seq) + diff
+      seq
+      |> Enum.chunk_every(2, 1, :discard)
+      |> Enum.map(fn [a, b] -> a - b end)
+      |> predict_prev
+      |> then(&(&1 + head))
     end
   end
 
-  def predict_prev(seq) do
-    predict_next(Enum.reverse(seq))
+  def predict_next(seq) do
+    predict_prev(Enum.reverse(seq))
   end
 
   def sum_predicted(input, predictor) do
