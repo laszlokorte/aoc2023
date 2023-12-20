@@ -19,7 +19,7 @@ defmodule Day4 do
   def score_points(hits), do: if(hits > 0, do: 2 ** (hits - 1), else: 0)
 
   def count_matches(line) do
-    [_, winners, actuals] = split(line, @separators, parts: 3)
+    [_, winners, actuals] = split(line, @separators, parts: 3, trim: true)
 
     find_numbers(actuals)
     |> MapSet.intersection(find_numbers(winners))

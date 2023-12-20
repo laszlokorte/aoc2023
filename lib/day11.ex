@@ -9,7 +9,7 @@ defmodule Day11 do
 
   def find_galaxies(input) do
     input
-    |> String.split(@line_break_pattern)
+    |> String.split(@line_break_pattern, trim: true)
     |> map(&String.codepoints/1)
     |> with_index()
     |> flat_map(fn {lines, y} ->
@@ -26,7 +26,7 @@ defmodule Day11 do
   end
 
   def find_emptyness(input) do
-    lines = input |> String.split(@line_break_pattern)
+    lines = input |> String.split(@line_break_pattern, trim: true)
 
     empty_rows =
       lines
@@ -64,9 +64,7 @@ defmodule Day11 do
 
     actual_galaxies = adjust_spacing(galaxies, emptiness, expansion_factor)
 
-    galaxy_pairs = for a <- actual_galaxies, b <- actual_galaxies, do: {a, b}
-
-    galaxy_pairs
+    for(a <- actual_galaxies, b <- actual_galaxies, do: {a, b})
     |> map(fn {{xa, ya}, {xb, yb}} -> {xb - xa, ya - yb} end)
     |> map(fn {dx, dy} -> abs(dx) + abs(dy) end)
     |> sum()

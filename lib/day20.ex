@@ -21,14 +21,14 @@ defmodule Day20 do
       line |> String.split(@wire_edge, trim: true, parts: 2) |> map(&String.trim/1)
 
     {kind, name} = source |> parse_source
-    out = sink |> String.split(@comma) |> map(&String.trim/1)
+    out = sink |> String.split(@comma, trim: true) |> map(&String.trim/1)
 
     {name, {kind, out}}
   end
 
   def parse(input) do
     input
-    |> String.split(@line_break_pattern)
+    |> String.split(@line_break_pattern, trim: true)
     |> map(&parse_line/1)
     |> into(Map.new())
   end
@@ -190,6 +190,9 @@ defmodule Day20 do
     find_multiple_predecessors(circuit, @stop_register)
     |> map(&trigger_pulses_until(circuit, memory, @initial_pulse, {&1, false}))
     |> map(&find_index(&1, fn {_, stopped, _, _} -> stopped end))
-    |> reduce(1, &lcm/2)
+    |> then(fn
+      [] -> "None"
+      res -> reduce(res, 1, &lcm/2)
+    end)
   end
 end

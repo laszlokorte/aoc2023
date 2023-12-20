@@ -17,13 +17,14 @@ defmodule Day8 do
 
   def parse_network(lines) do
     lines
-    |> String.split(@line_break_pattern)
+    |> String.split(@line_break_pattern, trim: true)
     |> Enum.map(&parse_network_line/1)
     |> Map.new()
   end
 
   def parse_input(input) do
-    [direction_line, network_lines] = String.split(input, @blank_line_pattern, parts: 2)
+    [direction_line, network_lines] =
+      String.split(input, @blank_line_pattern, parts: 2, trim: true)
 
     {String.codepoints(direction_line), parse_network(network_lines)}
   end

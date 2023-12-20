@@ -22,7 +22,7 @@ defmodule Day17 do
   def parse(input) do
     grid =
       input
-      |> String.split(@line_break_pattern)
+      |> String.split(@line_break_pattern, trim: true)
       |> with_index()
       |> flat_map(fn
         {line, y} ->

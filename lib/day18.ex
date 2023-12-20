@@ -29,7 +29,7 @@ defmodule Day18 do
   end
 
   def parse(input, line_parsers) do
-    input |> String.split(@line_break_pattern) |> Enum.map(line_parsers)
+    input |> String.split(@line_break_pattern, trim: true) |> Enum.map(line_parsers)
   end
 
   def enclosed_area(steps) do

@@ -43,9 +43,7 @@ defmodule Mix.Tasks.AocRun do
       |> Enum.find(fn d -> AOC.Day.number(struct(d, [])) == day_number end)
 
     for part <- parts, env <- envs do
-      input = AOC.Day.input(struct(day, []), part, env)
-
-      {day, part, env, input}
+      {day, part, env, AOC.Day.input(struct(day, []), part, env)}
     end
     |> Task.async_stream(
       fn

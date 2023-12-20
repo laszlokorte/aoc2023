@@ -10,8 +10,9 @@ defmodule Mix.Tasks.AocInit do
           "inputs/day-#{day}-test-1.txt",
           "inputs/day-#{day}-test-2.txt",
           "inputs/day-#{day}-prod.txt"
-        ] do
-      unless File.exists?(f), do: File.write(f, "", [:write, :append, :utf8])
+        ],
+        not File.exists?(f) do
+      File.write(f, "", [:write, :append, :utf8])
     end
 
     unless File.exists?("lib/day#{day}.ex") do

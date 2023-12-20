@@ -24,8 +24,8 @@ defmodule Day9 do
 
   def sum_predicted(input, predictor) do
     input
-    |> String.split(@line_break_pattern)
-    |> map(&String.split(&1, @spaces))
+    |> String.split(@line_break_pattern, trim: true)
+    |> map(&String.split(&1, @spaces, trim: true))
     |> map(fn l -> map(l, &String.to_integer/1) end)
     |> map(predictor)
     |> sum()

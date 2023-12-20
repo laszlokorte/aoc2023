@@ -41,20 +41,21 @@ defmodule Day19 do
   end
 
   def parse_workflow([name, rules]) do
-    {name, rules |> String.split(@comma) |> map(&parse_rule/1)}
+    {name, rules |> String.split(@comma, trim: true) |> map(&parse_rule/1)}
   end
 
   def parse_parts(part) do
     part
-    |> String.split(@comma)
-    |> map(&String.split(&1, @eq, parts: 2))
+    |> String.split(@comma, trim: true)
+    |> map(&String.split(&1, @eq, parts: 2, trim: true))
     |> map(fn
       [p, v] -> {parse_category(p), String.to_integer(v)}
     end)
   end
 
   def parse(input) do
-    [workflows_string, parts_string] = input |> String.split(@empty_line_pattern, parts: 2)
+    [workflows_string, parts_string] =
+      input |> String.split(@empty_line_pattern, parts: 2, trim: true)
 
     workflows =
       @workflow_pattern
@@ -64,7 +65,7 @@ defmodule Day19 do
 
     parts =
       parts_string
-      |> String.split(@line_break_pattern)
+      |> String.split(@line_break_pattern, trim: true)
       |> map(&String.trim_leading(&1, "{"))
       |> map(&String.trim_trailing(&1, "}"))
       |> map(&parse_parts/1)

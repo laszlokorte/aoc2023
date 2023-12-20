@@ -76,4 +76,5 @@ Day 19, Part 2, test: 167409079868000
 Day 19, Part 2, prod: 138625360533574
 Day 20, Part 1, test: 11687500
 Day 20, Part 1, prod: 825896364
+Day 20, Part 2, test: None
 Day 20, Part 2, prod: 243566897206981

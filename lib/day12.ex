@@ -15,7 +15,7 @@ defmodule Day12 do
   @spring_unknown ??
 
   def parse_line(line, multiplier \\ 1) do
-    [pattern, counts] = String.split(line, @space, parts: 2)
+    [pattern, counts] = String.split(line, @space, parts: 2, trim: true)
 
     springs =
       pattern
@@ -26,7 +26,7 @@ defmodule Day12 do
       counts
       |> List.duplicate(multiplier)
       |> join(@comma)
-      |> String.split(@comma)
+      |> String.split(@comma, trim: true)
       |> map(&String.to_integer/1)
       |> into(<<>>, fn num -> <<num::8>> end)
 
@@ -75,7 +75,7 @@ defmodule Day12 do
 
   def part(1, input) do
     input
-    |> String.split(@line_break_pattern)
+    |> String.split(@line_break_pattern, trim: true)
     |> map(&parse_line(&1))
     |> map(&count_combinations/1)
     |> sum()
@@ -83,7 +83,7 @@ defmodule Day12 do
 
   def part(2, input) do
     input
-    |> String.split(@line_break_pattern)
+    |> String.split(@line_break_pattern, trim: true)
     |> map(&parse_line(&1, @part2_multiplier))
     |> map(&count_combinations/1)
     |> sum()

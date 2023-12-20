@@ -8,6 +8,7 @@ defmodule Day15 do
   @op_pattern ~r{(?<lense>\w+)(?:=(?<focal>\d)|(?<sub>-))}
   @boxes 0..(@box_count - 1) |> into(Map.new(), fn i -> {i, []} end)
   @sub "-"
+  @comma ","
 
   def hash(<<>>, acc), do: acc
 
@@ -42,14 +43,14 @@ defmodule Day15 do
 
   def part(1, input) do
     input
-    |> String.split(",")
+    |> String.split(@comma, trim: true)
     |> map(&hash/1)
     |> sum()
   end
 
   def part(2, input) do
     input
-    |> String.split(",")
+    |> String.split(@comma, trim: true)
     |> map(&parse_operation/1)
     |> reduce(@boxes, &apply_operation/2)
     |> map(&focusing_power/1)

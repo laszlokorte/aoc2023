@@ -40,7 +40,7 @@ defmodule Day16 do
   def parse(input) do
     map =
       input
-      |> String.split(@line_break_pattern)
+      |> String.split(@line_break_pattern, trim: true)
       |> with_index()
       |> flat_map(fn
         {line, y} ->

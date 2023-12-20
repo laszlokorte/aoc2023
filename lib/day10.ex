@@ -144,10 +144,7 @@ defmodule Day10 do
 
     {maxx, maxy} = size = grid_size(pipe_map)
 
-    test_candiates =
-      for x <- 0..maxx, y <- 0..maxy, not MapSet.member?(used_positions, {x, y}), do: {x, y}
-
-    test_candiates
+    for(x <- 0..maxx, y <- 0..maxy, not MapSet.member?(used_positions, {x, y}), do: {x, y})
     |> count(fn {x, y} ->
       cast_grid_ray({x, y}, @ray_direction, size)
       |> then(&ray_count_hits(pipe_map, used_positions, &1))
