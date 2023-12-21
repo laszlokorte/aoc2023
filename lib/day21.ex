@@ -47,30 +47,32 @@ defmodule Day21 do
   def gcd(x, 0), do: x
   def gcd(x, y), do: gcd(y, rem(x, y))
 
-  def extrapolate([head | _] = seq, stepsize, depth \\ 0) do
+  def extrapolate_polynom([head | _] = seq, stepsize, depth \\ 0) do
     import Enum
 
+    multiplied_head = head * number_of_choices(stepsize, depth)
+
     if all?(seq, &(&1 == head)) do
-      head * choices(stepsize, depth)
+      multiplied_head
     else
       seq
       |> chunk_every(2, 1, :discard)
       |> map(fn [a, b] -> b - a end)
-      |> extrapolate(stepsize, depth + 1)
-      |> then(&(&1 + head * choices(stepsize, depth)))
+      |> extrapolate_polynom(stepsize, depth + 1)
+      |> then(&(&1 + multiplied_head))
     end
   end
 
-  def choices(_, 0), do: 1
-  def choices(over, over), do: 1
-  def choices(over, 1), do: over
+  def number_of_choices(_, 0), do: 1
+  def number_of_choices(over, over), do: 1
+  def number_of_choices(over, 1), do: over
 
-  def choices(over, under) do
-    div(over, fac(under)) * choices(over - 1, under - 1)
+  def number_of_choices(over, under) do
+    div(over, factorial(under)) * number_of_choices(over - 1, under - 1)
   end
 
-  def fac(1), do: 1
-  def fac(a), do: a * fac(a - 1)
+  def factorial(1), do: 1
+  def factorial(a), do: a * factorial(a - 1)
 
   def propagate_wave(start, places, mod, steps) do
     Stream.iterate(MapSet.new([start]), fn
@@ -97,11 +99,17 @@ defmodule Day21 do
   def part(2, input) do
     {places, start, mod = {wmod, hmod}} = input |> parse
 
-    period = lcm(wmod, hmod)
+    period_length = lcm(wmod, hmod)
 
-    for i <- 0..@polydegree do
-      propagate_wave(start, places, mod, rem(@large_step_count, period) + i * period)
-    end
-    |> extrapolate(div(@large_step_count, period))
+    0..@polydegree
+    |> Enum.map(
+      &propagate_wave(
+        start,
+        places,
+        mod,
+        rem(@large_step_count, period_length) + period_length * &1
+      )
+    )
+    |> extrapolate_polynom(div(@large_step_count, period_length))
   end
 end
