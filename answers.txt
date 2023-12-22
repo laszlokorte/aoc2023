@@ -82,3 +82,7 @@ Day 21, Part 1, test: 2665
 Day 21, Part 1, prod: 3682
 Day 21, Part 2, test: 394693372021459
 Day 21, Part 2, prod: 609012263058042
+Day 22, Part 1, test: 5
+Day 22, Part 1, prod: 465
+Day 22, Part 2, test: 7
+Day 22, Part 2, prod: 79042
