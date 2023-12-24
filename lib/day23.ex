@@ -10,6 +10,13 @@ defmodule Day23 do
     {:<, -1, 0}
   ]
 
+  def parse_field("."), do: :free
+  def parse_field(">"), do: :>
+  def parse_field("<"), do: :<
+  def parse_field("v"), do: :v
+  def parse_field("^"), do: :^
+  def parse_field("#"), do: nil
+
   def parse(input) do
     fields =
       input
@@ -20,75 +27,19 @@ defmodule Day23 do
           line
           |> String.graphemes()
           |> Enum.with_index()
-          |> Enum.filter(fn
-            {@wall, _} -> false
-            _ -> true
-          end)
           |> Enum.map(fn
-            {".", x} -> {{x, y}, :free}
-            {">", x} -> {{x, y}, :>}
-            {"<", x} -> {{x, y}, :<}
-            {"v", x} -> {{x, y}, :v}
-            {"^", x} -> {{x, y}, :^}
+            {s, x} -> {{x, y}, parse_field(s)}
+          end)
+          |> Enum.filter(fn
+            {_, d} -> d != nil
           end)
       end)
       |> Enum.into(Map.new())
 
     start = Map.keys(fields) |> Enum.min_by(&elem(&1, 1))
     goal = Map.keys(fields) |> Enum.max_by(&elem(&1, 1))
+
     {fields, start, goal}
-  end
-
-  def dijkstra_children(fields, {cost, {cx, cy}, preds}) do
-    field_type = Map.get(fields, {cx, cy})
-
-    @dirs
-    |> Enum.filter(fn
-      {^field_type, _, _} -> true
-      _ -> field_type == :free
-    end)
-    |> Enum.map(fn
-      {_, dx, dy} -> {cost - 1, {cx + dx, cy + dy}}
-    end)
-    |> Enum.filter(&Map.has_key?(fields, elem(&1, 1)))
-    |> Enum.filter(&(not MapSet.member?(preds, elem(&1, 1))))
-    |> Enum.map(fn
-      {c, pos} -> {c, pos, MapSet.put(preds, pos)}
-    end)
-  end
-
-  def dijkstra(queue, child_gen, collector, goal, results) do
-    if :gb_sets.is_empty(queue) do
-      results
-    else
-      {current, new_queue} = :gb_sets.take_smallest(queue)
-
-      child_gen.(current)
-      |> Enum.reduce(new_queue, &:gb_sets.insert(&1, &2))
-      |> dijkstra(
-        child_gen,
-        collector,
-        goal,
-        collector.(current, goal, results)
-      )
-    end
-  end
-
-  def find_longest(fields, start, goal) do
-    queue = :gb_sets.new()
-    queue = :gb_sets.insert({0, start, MapSet.new()}, queue)
-
-    queue
-    |> dijkstra(
-      &dijkstra_children(fields, &1),
-      fn
-        {loss, goal, _preds}, goal, results -> [loss | results]
-        _, _, results -> results
-      end,
-      goal,
-      []
-    )
-    |> Enum.max()
   end
 
   def find_crossings(fields) do
@@ -111,92 +62,90 @@ defmodule Day23 do
       |> MapSet.put(goal)
 
     for cr <- crossings do
-      queue = :gb_sets.new()
-      queue = :gb_sets.insert({0, cr}, queue)
-      {cr, bfs(queue, fields, crossings, MapSet.new([cr]), [])}
+      {cr,
+       dfs(
+         [{0, {cr, MapSet.new()}}],
+         fn
+           {cost, {{cx, cy}, preds}} ->
+             field_type = Map.get(fields, {cx, cy})
+
+             @dirs
+             |> Enum.filter(fn
+               {^field_type, _, _} -> true
+               _ -> field_type == :free
+             end)
+             |> Enum.map(fn
+               {_, dx, dy} -> {cost + 1, {cx + dx, cy + dy}}
+             end)
+             |> Enum.filter(&Map.has_key?(fields, elem(&1, 1)))
+             |> Enum.filter(&(not MapSet.member?(preds, elem(&1, 1))))
+             |> Enum.map(fn
+               {cost, pos} -> {cost, {pos, MapSet.put(preds, {cx, cy})}}
+             end)
+             |> then(&if Enum.count(&1) > 1 and cost > 0, do: [], else: &1)
+         end,
+         fn
+           {cost, {current_pos, _}}, results ->
+             if MapSet.member?(crossings, current_pos) do
+               [{cost, current_pos} | results]
+             else
+               results
+             end
+         end,
+         []
+       )
+       |> Enum.filter(&(elem(&1, 0) != 0))}
     end
     |> Enum.into(Map.new())
   end
 
-  def bfs_children(fields, {cost, {cx, cy}}, seen) do
-    @dirs
-    |> Enum.map(fn
-      {_, dx, dy} -> {cost + 1, {cx + dx, cy + dy}}
-    end)
-    |> Enum.filter(&Map.has_key?(fields, elem(&1, 1)))
-    |> Enum.filter(&(not MapSet.member?(seen, elem(&1, 1))))
+  def dfs([], _child_gen, _collect, results), do: results
+
+  def dfs([{current_cost, current_pos} | rest_stack], child_gen, collect, results) do
+    child_gen.({current_cost, current_pos})
+    |> Enum.reduce(rest_stack, &[&1 | &2])
+    |> dfs(child_gen, collect, collect.({current_cost, current_pos}, results))
   end
 
-  def bfs(queue, fields, goals, seen, results) do
-    if :gb_sets.is_empty(queue) do
-      results
-      |> Enum.filter(fn
-        {0, _} -> false
-        _ -> true
-      end)
-    else
-      {{current_cost, current_pos}, new_queue} = :gb_sets.take_smallest(queue)
-
-      children =
-        bfs_children(fields, {current_cost, current_pos}, seen)
-        |> then(&if Enum.count(&1) > 1 and current_cost > 0, do: [], else: &1)
-
-      new_seen =
-        Enum.reduce(children, seen, fn
-          {_, new_pos}, old_seen ->
-            MapSet.put(old_seen, new_pos)
-        end)
-
-      new_queue =
-        Enum.reduce(children, new_queue, fn child, queue ->
-          :gb_sets.insert(child, queue)
-        end)
-
-      new_result =
-        if MapSet.member?(goals, current_pos) do
-          [{current_cost, current_pos} | results]
-        else
-          results
-        end
-
-      bfs(new_queue, fields, goals, new_seen, new_result)
-    end
+  def find_longest(edges, start, goal) do
+    dfs(
+      [{0, {start, MapSet.new()}}],
+      fn
+        {cost, {{cx, cy}, preds}} ->
+          edges
+          |> Map.get({cx, cy}, [])
+          |> Enum.map(fn
+            {new_cost, new_pos} -> {cost + new_cost, new_pos}
+          end)
+          |> Enum.filter(&(not MapSet.member?(preds, elem(&1, 1))))
+          |> Enum.map(fn
+            {cost, pos} -> {cost, {pos, MapSet.put(preds, {cx, cy})}}
+          end)
+      end,
+      fn
+        {cost, {^goal, _}}, longest -> max(cost, longest)
+        _, longest -> longest
+      end,
+      0
+    )
   end
 
   def part(1, input) do
     {fields, start, goal} = input |> parse
 
-    find_longest(fields, start, goal)
+    fields
+    |> Enum.into(Map.new())
+    |> reduce_graph(start, goal)
+    |> find_longest(start, goal)
   end
 
   def part(2, input) do
     {fields, start, goal} = input |> parse
 
-    reduced = reduce_graph(fields, start, goal)
-
-    queue = :gb_sets.new()
-    queue = :gb_sets.insert({0, start, MapSet.new()}, queue)
-
-    queue
-    |> dijkstra(
-      fn
-        {cost, current, preds} ->
-          Map.get(reduced, current, [])
-          |> Enum.filter(&(not MapSet.member?(preds, elem(&1, 1))))
-          |> Enum.map(fn
-            {c, pos} -> {c, pos, MapSet.put(preds, pos)}
-          end)
-          |> Enum.map(fn
-            {dist, pos, preds} -> {dist + cost, pos, preds}
-          end)
-      end,
-      fn
-        {loss, goal, _}, goal, results -> [loss | results]
-        _, _, results -> results
-      end,
-      goal,
-      []
-    )
-    |> Enum.max()
+    fields
+    |> Enum.map(fn {pos, _} -> {pos, :free} end)
+    |> Enum.into(Map.new())
+    |> reduce_graph(start, goal)
+    |> find_longest(start, goal)
   end
 end
