@@ -86,3 +86,7 @@ Day 22, Part 1, test: 5
 Day 22, Part 1, prod: 465
 Day 22, Part 2, test: 7
 Day 22, Part 2, prod: 79042
+Day 23, Part 1, test: 94
+Day 23, Part 1, prod: 2210
+Day 23, Part 2, test: 154
+Day 23, Part 2, prod: 6522
