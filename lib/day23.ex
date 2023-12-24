@@ -48,7 +48,7 @@ defmodule Day23 do
       _ -> field_type == :free
     end)
     |> Enum.map(fn
-      {_, dx, dy} -> {cost + 1, {cx + dx, cy + dy}}
+      {_, dx, dy} -> {cost - 1, {cx + dx, cy + dy}}
     end)
     |> Enum.filter(&Map.has_key?(fields, elem(&1, 1)))
     |> Enum.filter(&(not MapSet.member?(preds, elem(&1, 1))))
@@ -57,28 +57,19 @@ defmodule Day23 do
     end)
   end
 
-  def dijkstra(queue, child_gen, collector, goal, results, seen \\ MapSet.new()) do
+  def dijkstra(queue, child_gen, collector, goal, results) do
     if :gb_sets.is_empty(queue) do
       results
     else
-      {current, new_queue} = :gb_sets.take_largest(queue)
+      {current, new_queue} = :gb_sets.take_smallest(queue)
 
-      children = child_gen.(current)
-
-      new_seen =
-        Enum.reduce(children, seen, fn
-          {cost, new_pos, _}, old_seen ->
-            Map.put(old_seen, new_pos, cost)
-        end)
-
-      children
+      child_gen.(current)
       |> Enum.reduce(new_queue, &:gb_sets.insert(&1, &2))
       |> dijkstra(
         child_gen,
         collector,
         goal,
-        collector.(current, goal, results),
-        new_seen
+        collector.(current, goal, results)
       )
     end
   end
