@@ -2,7 +2,6 @@ defmodule Day23 do
   use AOC, day: 23
 
   @line_break_pattern ~r{\R}
-  @wall "#"
   @dirs [
     {:v, 0, +1},
     {:^, 0, -1},
