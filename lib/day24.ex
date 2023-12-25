@@ -5,6 +5,7 @@ defmodule Day24 do
   @line_pattern ~r{(?<x>-?\d+),\s+(?<y>-?\d+),\s+(?<z>-?\d+)\s+@\s+(?<vx>-?\d+),\s+(?<vy>-?\d+),\s+(?<vz>-?\d+)}
   @min 200000000000000
   @max 400000000000000
+  @z3result ~r{\(\(sum (?<result>\d+)\)\)}
 
   def parse_line(line) do
     [x,y,z,vx,vy,vz] = @line_pattern 
@@ -51,6 +52,41 @@ defmodule Day24 do
   end
 
   def part(2, input) do
-    input
+    hails = input |> parse |> Enum.take(4)
+
+    z3 = Port.open({:spawn, "z3 -in"}, [:binary])
+
+
+    z3decls = [
+      Enum.map(1..4, &"t#{&1}"),
+      Enum.map(1..3, &"x#{&1}"),
+      Enum.map(1..3, &"xd#{&1}"),
+      ["sum"],
+    ] |> Enum.concat
+    |> Enum.map(&"(declare-const #{&1} Int)")
+    |> Enum.concat(
+      hails |> Enum.with_index(1) |> Enum.flat_map(fn {{base,dir}, h} ->
+        Enum.zip_with([1..3, Tuple.to_list(base), Tuple.to_list(dir)], fn
+          [i, b, d] -> "(assert (= (+ #{b} (* t#{h} #{d})) (+ x#{i} (* t#{h} xd#{i}))))"
+        end)
+      end)
+    )
+    |> Enum.concat([
+      "(assert (= sum (+ x1 x2 x3)))",
+      "(check-sat)",
+      "(get-value (sum))",
+    ])
+
+    for d <- z3decls do
+      send(z3, {self(), {:command, d}})
+      send(z3, {self(), {:command, "\n"}})
+    end
+
+
+    receive do
+      {^z3, _} -> receive do
+        {^z3, {:data, x}} -> Regex.run(@z3result, x, capture: [:result])
+      end
+    end
   end
 end
