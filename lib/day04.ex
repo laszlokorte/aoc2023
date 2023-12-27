@@ -45,7 +45,7 @@ defmodule Day4 do
     |> elem(0)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> split(@line_break_pattern, trim: true)
     |> map(&Day4.count_matches/1)
@@ -53,7 +53,7 @@ defmodule Day4 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> split(@line_break_pattern, trim: true)
     |> map(&Day4.count_matches/1)

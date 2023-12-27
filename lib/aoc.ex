@@ -7,26 +7,28 @@ defmodule AOC do
   end
 
   defmacro __using__(opts) do
+    padded_day = opts |> Keyword.get(:day) |> Integer.to_string() |> String.pad_leading(2, "0")
+
     quote do
       defstruct []
 
       defimpl AOC.Day do
-        @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-test-1.txt")
-        @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-test-2.txt")
-        @external_resource unquote("inputs/day-#{Keyword.get(opts, :day)}-prod.txt")
+        @external_resource unquote("inputs/day-#{padded_day}-test-1.txt")
+        @external_resource unquote("inputs/day-#{padded_day}-test-2.txt")
+        @external_resource unquote("inputs/day-#{padded_day}-prod.txt")
 
         @inputdata Map.new([
                      {{1, :test},
-                      File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-test-1.txt"))
+                      File.read(unquote("inputs/day-#{padded_day}-test-1.txt"))
                       |> elem(1)},
                      {{2, :test},
-                      File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-test-2.txt"))
+                      File.read(unquote("inputs/day-#{padded_day}-test-2.txt"))
                       |> elem(1)},
                      {{1, :prod},
-                      File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-prod.txt"))
+                      File.read(unquote("inputs/day-#{padded_day}-prod.txt"))
                       |> elem(1)},
                      {{2, :prod},
-                      File.read(unquote("inputs/day-#{Keyword.get(opts, :day)}-prod.txt"))
+                      File.read(unquote("inputs/day-#{padded_day}-prod.txt"))
                       |> elem(1)}
                    ])
 

@@ -25,11 +25,11 @@ defmodule Mix.Tasks.AocInit do
           defmodule unquote(module_name) do
             use AOC, day: unquote(day_num)
 
-            def part(1, input) do
+            def part(1, input, _env) do
               input
             end
 
-            def part(2, input) do
+            def part(2, input, _env) do
               input
             end
           end

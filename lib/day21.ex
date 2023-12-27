@@ -90,13 +90,13 @@ defmodule Day21 do
     |> Enum.count()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     {places, start, mod} = input |> parse
 
     propagate_wave(start, places, mod, @step_count)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     {places, start, mod = {wmod, hmod}} = input |> parse
 
     period_length = lcm(wmod, hmod)

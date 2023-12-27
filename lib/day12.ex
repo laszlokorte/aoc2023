@@ -73,7 +73,7 @@ defmodule Day12 do
     ramaining_combos(a, b, false)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&parse_line(&1))
@@ -81,7 +81,7 @@ defmodule Day12 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&parse_line(&1, @part2_multiplier))

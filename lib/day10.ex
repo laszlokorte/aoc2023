@@ -125,14 +125,14 @@ defmodule Day10 do
     |> count(&(&1 in @biased_vertical_pipes))
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     parse_pipes(input)
     |> longest_loop
     |> count()
     |> Integer.floor_div(2)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     pipe_map = parse_pipes(input)
     loop = longest_loop(pipe_map)
     pipe_map = fillin_start(pipe_map, loop)

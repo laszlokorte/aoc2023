@@ -31,11 +31,11 @@ defmodule Day9 do
     |> sum()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input |> sum_predicted(&predict_next/1)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input |> sum_predicted(&predict_prev/1)
   end
 end

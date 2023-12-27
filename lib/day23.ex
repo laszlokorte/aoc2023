@@ -129,7 +129,7 @@ defmodule Day23 do
     )
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     {fields, start, goal} = input |> parse
 
     fields
@@ -138,7 +138,7 @@ defmodule Day23 do
     |> find_longest(start, goal)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     {fields, start, goal} = input |> parse
 
     fields

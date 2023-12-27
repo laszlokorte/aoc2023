@@ -173,7 +173,7 @@ defmodule Day20 do
     end)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     circuit = input |> parse
     memory = init_memory(circuit)
 
@@ -183,7 +183,7 @@ defmodule Day20 do
     |> Tuple.product()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     circuit = input |> parse
     memory = init_memory(circuit)
 

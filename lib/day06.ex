@@ -18,7 +18,7 @@ defmodule Day6 do
     String.to_integer(num)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     [timeline, distanceline] = String.split(input, @line_break_pattern, limit: 1, trim: true)
     times = @digits |> Regex.scan(timeline) |> map(&single_int/1)
     distances = @digits |> Regex.scan(distanceline) |> map(&single_int/1)
@@ -29,7 +29,7 @@ defmodule Day6 do
     |> reduce(1, &(&1 * &2))
   end
 
-  def part(2, input) do
-    part(1, String.replace(input, " ", ""))
+  def part(2, input, env) do
+    part(1, String.replace(input, " ", ""), env)
   end
 end

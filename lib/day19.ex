@@ -164,7 +164,7 @@ defmodule Day19 do
     sum(for {_, v} <- part, do: v)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     {workflows, parts} = input |> parse
 
     parts
@@ -173,7 +173,7 @@ defmodule Day19 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     {workflows, _} = input |> parse
 
     @max_range_part

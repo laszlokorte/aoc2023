@@ -48,7 +48,7 @@ defmodule Mix.Tasks.AocRun do
     |> Task.async_stream(
       fn
         {day, part, env, input} ->
-          {part, env, apply(day, :part, [part, input])}
+          {part, env, apply(day, :part, [part, input, env])}
       end,
       ordered: true,
       timeout: :infinity

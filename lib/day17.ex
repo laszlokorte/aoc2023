@@ -132,13 +132,13 @@ defmodule Day17 do
     |> min()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> parse
     |> find_shortest({@min_straight_moves_part1, @max_straight_moves_part1}, @start_pos)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> parse
     |> find_shortest({@min_straight_moves_part2, @max_straight_moves_part2}, @start_pos)

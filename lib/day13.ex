@@ -58,11 +58,11 @@ defmodule Day13 do
     |> sum()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     solve(input, 0)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     solve(input, 1)
   end
 end

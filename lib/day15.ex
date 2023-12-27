@@ -41,14 +41,14 @@ defmodule Day15 do
     |> sum()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> String.split(@comma, trim: true)
     |> map(&hash/1)
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> String.split(@comma, trim: true)
     |> map(&parse_operation/1)

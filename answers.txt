@@ -94,5 +94,5 @@ Day 24, Part 1, test: 2
 Day 24, Part 1, prod: 21843
 Day 24, Part 2, test: 47
 Day 24, Part 2, prod: 540355811503157
-Day 5, Part 1, test: 54
-Day 5, Part 1, prod: 538368
+Day 25, Part 1, test: 54
+Day 25, Part 1, prod: 538368

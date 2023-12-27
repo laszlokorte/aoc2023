@@ -50,7 +50,7 @@ defmodule Day2 do
     Map.values(cubes) |> reduce(1, &(&1 * &2))
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&Day2.parse_game/1)
@@ -59,7 +59,7 @@ defmodule Day2 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&Day2.parse_game/1)

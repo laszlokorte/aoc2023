@@ -138,13 +138,13 @@ defmodule Day14 do
     end
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     StoneMap.parse(input)
     |> StoneMap.tilt(:up)
     |> StoneMap.weight()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     map = StoneMap.parse(input)
 
     total_tilts = @part2_cycle_count * count(@part2_seq)

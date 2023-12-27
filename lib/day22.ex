@@ -71,14 +71,14 @@ defmodule Day22 do
     bricks |> Enum.count(&is_free(bricks, &1))
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> parse
     |> settle
     |> count_free
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     settled = input |> parse |> settle
 
     settled

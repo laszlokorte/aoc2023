@@ -69,11 +69,11 @@ defmodule Day7 do
     |> sum()
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     calculate_hands(input, @cards_part1, @jokers_part1)
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     calculate_hands(input, @cards_part2, @jokers_part2)
   end
 end

@@ -47,13 +47,13 @@ defmodule Day18 do
     |> elem(1)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> parse(&parse_line_simple/1)
     |> enclosed_area
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> parse(&parse_line_hex/1)
     |> enclosed_area

@@ -35,7 +35,7 @@ defmodule Day1 do
     map(digits, &single_digit_to_int(&1, fallback_words))
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&Day1.find_matches(&1, @part1pattern))
@@ -45,7 +45,7 @@ defmodule Day1 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> String.split(@line_break_pattern, trim: true)
     |> map(&Day1.find_matches(&1, @part2pattern))

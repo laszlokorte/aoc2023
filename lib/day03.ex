@@ -78,7 +78,7 @@ defmodule Day3 do
     |> map(fn l -> @spacer <> l <> @spacer end)
   end
 
-  def part(1, input) do
+  def part(1, input, _env) do
     input
     |> Day3.split_pad(2)
     |> chunk_every(3, 1, :discard)
@@ -87,7 +87,7 @@ defmodule Day3 do
     |> sum()
   end
 
-  def part(2, input) do
+  def part(2, input, _env) do
     input
     |> Day3.split_pad(2)
     |> chunk_every(5, 1, :discard)
